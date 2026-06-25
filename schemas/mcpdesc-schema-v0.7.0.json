@@ -1,0 +1,822 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://developer.cisco.com/mcp-description/schema/0.7.0",
+  "title": "MCP Server Description",
+  "description": "Standalone MCP Server Description format — a static, curated declaration of what an MCP server offers. Uses MCP-native terminology, OpenAPI-aligned info/security structure, and support for multiple transports and specification extensions. Compatible with MCP protocol versions 2025-03-26, 2025-06-18, and 2025-11-25.",
+  "type": "object",
+  "required": [
+    "mcpdesc",
+    "info",
+    "transports"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference for IDE validation"
+    },
+    "mcpdesc": {
+      "type": "string",
+      "const": "0.7.0",
+      "description": "MCP Description specification version"
+    },
+    "info": {
+      "type": "object",
+      "description": "Server metadata — OpenAPI-aligned info object with MCP BaseMetadata support (name + title)",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Programmatic server name (identifier)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Human-readable display name for UI contexts (MCP BaseMetadata, since 2025-06-18). Falls back to name if not provided."
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief description of what the server does"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Server version (semver recommended)"
+        },
+        "protocolVersion": {
+          "type": "string",
+          "enum": [
+            "2024-11-05",
+            "2025-03-26",
+            "2025-06-18",
+            "2025-11-25"
+          ],
+          "description": "MCP protocol version implemented by this server"
+        },
+        "id": {
+          "type": "string",
+          "description": "Unique server identifier (URI, DID, or URN)"
+        },
+        "icons": {
+          "$ref": "#/definitions/icons",
+          "description": "Optional set of sized icons for UI display (MCP 2025-11-25+)"
+        },
+        "websiteUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of the server's website (MCP 2025-11-25+)"
+        },
+        "contact": {
+          "type": "object",
+          "description": "Contact information (OpenAPI-style)",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Organization or maintainer name"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "description": "URL for the contact"
+            },
+            "email": {
+              "type": "string",
+              "format": "email",
+              "description": "Contact email address"
+            }
+          },
+          "additionalProperties": false
+        },
+        "license": {
+          "type": "object",
+          "description": "License information (OpenAPI-style)",
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "License name (e.g., 'Apache-2.0', 'MIT')"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "description": "URL to the license text"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "transports": {
+      "type": "array",
+      "description": "Transport configurations — one or more supported transports for this server",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "Streamable HTTP transport",
+            "required": [
+              "type",
+              "url"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "streamable-http",
+                "description": "Streamable HTTP transport type"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "MCP endpoint URL"
+              },
+              "security": {
+                "$ref": "#/definitions/securitySchemes",
+                "description": "Transport-specific security. Overrides root-level security for this transport."
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "description": "stdio transport",
+            "required": [
+              "type",
+              "command"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "stdio",
+                "description": "stdio transport type"
+              },
+              "command": {
+                "type": "string",
+                "description": "Command to launch the server"
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Command arguments"
+              },
+              "env": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Environment variables"
+              },
+              "security": {
+                "$ref": "#/definitions/securitySchemes",
+                "description": "Transport-specific security. Overrides root-level security for this transport."
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "description": "SSE transport (legacy, for backward compatibility)",
+            "required": [
+              "type",
+              "url"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "sse",
+                "description": "Server-Sent Events transport type (legacy)"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "SSE endpoint URL"
+              },
+              "security": {
+                "$ref": "#/definitions/securitySchemes",
+                "description": "Transport-specific security. Overrides root-level security for this transport."
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "security": {
+      "$ref": "#/definitions/securitySchemes",
+      "description": "Default security schemes — applies to all transports unless overridden. Empty array or omitted means no authentication required."
+    },
+    "capabilities": {
+      "type": "object",
+      "description": "Server capabilities from MCP InitializeResult",
+      "properties": {
+        "tools": {
+          "type": "object",
+          "properties": {
+            "listChanged": {
+              "type": "boolean"
+            }
+          }
+        },
+        "resources": {
+          "type": "object",
+          "properties": {
+            "subscribe": {
+              "type": "boolean"
+            },
+            "listChanged": {
+              "type": "boolean"
+            }
+          }
+        },
+        "prompts": {
+          "type": "object",
+          "properties": {
+            "listChanged": {
+              "type": "boolean"
+            }
+          }
+        },
+        "completions": {
+          "type": "object",
+          "description": "Present if the server supports argument autocompletion suggestions (MCP 2025-03-26+)"
+        },
+        "logging": {
+          "type": "object",
+          "description": "Present if the server supports sending log messages to the client"
+        },
+        "tasks": {
+          "type": "object",
+          "description": "Present if the server supports task-augmented requests (MCP 2025-11-25+)",
+          "properties": {
+            "list": {
+              "type": "object"
+            },
+            "cancel": {
+              "type": "object"
+            },
+            "requests": {
+              "type": "object",
+              "properties": {
+                "tools": {
+                  "type": "object",
+                  "properties": {
+                    "call": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "experimental": {
+          "type": "object",
+          "description": "Experimental, non-standard capabilities"
+        }
+      },
+      "additionalProperties": true
+    },
+    "tools": {
+      "type": "array",
+      "description": "Tools exposed by the server — MCP-native format",
+      "items": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Programmatic tool name (identifier)"
+          },
+          "title": {
+            "type": "string",
+            "description": "Human-readable display name for UI contexts (MCP BaseMetadata, since 2025-06-18)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable tool description"
+          },
+          "inputSchema": {
+            "type": "object",
+            "description": "JSON Schema for tool input parameters",
+            "properties": {
+              "$schema": {
+                "type": "string",
+                "description": "Explicit JSON Schema dialect (MCP 2025-11-25+)"
+              },
+              "type": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object"
+              },
+              "required": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": true
+          },
+          "outputSchema": {
+            "type": "object",
+            "description": "JSON Schema for structured tool output (MCP 2025-06-18+). Defaults to JSON Schema 2020-12 when no explicit $schema is provided.",
+            "properties": {
+              "$schema": {
+                "type": "string",
+                "description": "Explicit JSON Schema dialect (MCP 2025-11-25+)"
+              },
+              "type": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object"
+              },
+              "required": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": true
+          },
+          "annotations": {
+            "type": "object",
+            "description": "MCP tool annotations — hints about tool behavior (not guaranteed faithful). Since 2025-03-26.",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Human-readable title for the tool"
+              },
+              "readOnlyHint": {
+                "type": "boolean",
+                "description": "If true, the tool does not modify its environment. Default: false"
+              },
+              "destructiveHint": {
+                "type": "boolean",
+                "description": "If true, the tool may perform destructive updates. Default: true"
+              },
+              "idempotentHint": {
+                "type": "boolean",
+                "description": "If true, repeated calls with same arguments have no additional effect. Default: false"
+              },
+              "openWorldHint": {
+                "type": "boolean",
+                "description": "If true, the tool may interact with external entities. Default: true"
+              }
+            },
+            "additionalProperties": true
+          },
+          "execution": {
+            "type": "object",
+            "description": "Execution-related properties for this tool (MCP 2025-11-25+)",
+            "properties": {
+              "taskSupport": {
+                "type": "string",
+                "enum": [
+                  "forbidden",
+                  "optional",
+                  "required"
+                ],
+                "description": "Whether this tool supports task-augmented execution. Default: forbidden"
+              }
+            },
+            "additionalProperties": false
+          },
+          "icons": {
+            "$ref": "#/definitions/icons",
+            "description": "Optional set of sized icons for UI display (MCP 2025-11-25+)"
+          },
+          "tags": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            },
+            "description": "Categorization tags"
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Whether the tool is deprecated"
+          },
+          "_meta": {
+            "type": "object",
+            "description": "Protocol-reserved metadata (MCP 2025-06-18+)",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "resources": {
+      "type": "array",
+      "description": "Resources exposed by the server — MCP-native format",
+      "items": {
+        "type": "object",
+        "required": [
+          "uri",
+          "name"
+        ],
+        "properties": {
+          "uri": {
+            "type": "string",
+            "description": "Resource URI"
+          },
+          "name": {
+            "type": "string",
+            "description": "Programmatic resource name (identifier)"
+          },
+          "title": {
+            "type": "string",
+            "description": "Human-readable display name for UI contexts (MCP BaseMetadata, since 2025-06-18)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable resource description"
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "MIME type of the resource content"
+          },
+          "size": {
+            "type": "number",
+            "description": "Size of the raw resource content in bytes, before base64 encoding or tokenization"
+          },
+          "annotations": {
+            "type": "object",
+            "description": "Resource annotations",
+            "additionalProperties": true
+          },
+          "icons": {
+            "$ref": "#/definitions/icons",
+            "description": "Optional set of sized icons for UI display (MCP 2025-11-25+)"
+          },
+          "tags": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            },
+            "description": "Categorization tags"
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Whether the resource is deprecated"
+          },
+          "_meta": {
+            "type": "object",
+            "description": "Protocol-reserved metadata (MCP 2025-06-18+)",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "resourceTemplates": {
+      "type": "array",
+      "description": "Resource templates — MCP-native format with URI templates",
+      "items": {
+        "type": "object",
+        "required": [
+          "uriTemplate",
+          "name"
+        ],
+        "properties": {
+          "uriTemplate": {
+            "type": "string",
+            "description": "URI template (RFC 6570)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Programmatic template name (identifier)"
+          },
+          "title": {
+            "type": "string",
+            "description": "Human-readable display name for UI contexts (MCP BaseMetadata, since 2025-06-18)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable template description"
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "MIME type of the resource content"
+          },
+          "annotations": {
+            "type": "object",
+            "description": "Resource template annotations",
+            "additionalProperties": true
+          },
+          "icons": {
+            "$ref": "#/definitions/icons",
+            "description": "Optional set of sized icons for UI display (MCP 2025-11-25+)"
+          },
+          "tags": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            },
+            "description": "Categorization tags"
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Whether the template is deprecated"
+          },
+          "_meta": {
+            "type": "object",
+            "description": "Protocol-reserved metadata (MCP 2025-06-18+)",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "prompts": {
+      "type": "array",
+      "description": "Prompts exposed by the server — MCP-native format (single arguments array)",
+      "items": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Programmatic prompt name (identifier)"
+          },
+          "title": {
+            "type": "string",
+            "description": "Human-readable display name for UI contexts (MCP BaseMetadata, since 2025-06-18)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable prompt description"
+          },
+          "arguments": {
+            "type": "array",
+            "description": "Prompt arguments — MCP-native array format",
+            "items": {
+              "type": "object",
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Programmatic argument name (identifier)"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Human-readable display name for UI contexts (MCP BaseMetadata, since 2025-06-18)"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Argument description"
+                },
+                "required": {
+                  "type": "boolean",
+                  "description": "Whether the argument is required"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "icons": {
+            "$ref": "#/definitions/icons",
+            "description": "Optional set of sized icons for UI display (MCP 2025-11-25+)"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Categorization tags"
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Whether the prompt is deprecated"
+          },
+          "_meta": {
+            "type": "object",
+            "description": "Protocol-reserved metadata (MCP 2025-06-18+)",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "tags": {
+      "type": "array",
+      "description": "Flat tag list — declares all valid tags for categorizing tools, resources, resource templates, and prompts. Array order determines display priority. Tag names MUST be unique.",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/tag"
+      }
+    }
+  },
+  "patternProperties": {
+    "^x-": {
+      "description": "Specification extensions",
+      "type": [
+        "object",
+        "array",
+        "string",
+        "number",
+        "boolean",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "anyOf": [
+    {
+      "required": [
+        "tools"
+      ]
+    },
+    {
+      "required": [
+        "resources"
+      ]
+    },
+    {
+      "required": [
+        "resourceTemplates"
+      ]
+    },
+    {
+      "required": [
+        "prompts"
+      ]
+    }
+  ],
+  "definitions": {
+    "tag": {
+      "type": "object",
+      "description": "A tag for categorizing server capabilities. Tag names MUST be unique.",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Tag identifier. MUST be unique across all tags."
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of the tag's purpose"
+        }
+      },
+      "additionalProperties": false
+    },
+    "oauthFlow": {
+      "type": "object",
+      "properties": {
+        "authorizationUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "tokenUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "refreshUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "scopes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "icon": {
+      "type": "object",
+      "description": "An optionally-sized icon for UI display (MCP 2025-11-25+)",
+      "required": [
+        "src"
+      ],
+      "properties": {
+        "src": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI pointing to an icon resource (HTTP/HTTPS URL or data: URI)"
+        },
+        "mimeType": {
+          "type": "string",
+          "description": "Optional MIME type override (e.g., 'image/png', 'image/svg+xml')"
+        },
+        "sizes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Sizes at which the icon can be used (e.g., '48x48', '96x96', 'any')"
+        },
+        "theme": {
+          "type": "string",
+          "enum": [
+            "light",
+            "dark"
+          ],
+          "description": "Theme this icon is designed for"
+        }
+      },
+      "additionalProperties": false
+    },
+    "icons": {
+      "type": "array",
+      "description": "Set of sized icons that clients can display in a user interface. Clients MUST support image/png and image/jpeg, SHOULD also support image/svg+xml and image/webp.",
+      "items": {
+        "$ref": "#/definitions/icon"
+      }
+    },
+    "securitySchemes": {
+      "type": "array",
+      "description": "Array of OpenAPI Security Scheme Objects.",
+      "items": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "http",
+              "apiKey",
+              "oauth2",
+              "openIdConnect"
+            ],
+            "description": "Security scheme type (OpenAPI 3.1)"
+          },
+          "scheme": {
+            "type": "string",
+            "description": "HTTP auth scheme (e.g., 'bearer', 'basic'). Required when type is 'http'."
+          },
+          "bearerFormat": {
+            "type": "string",
+            "description": "Bearer token format hint (e.g., 'JWT')"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the API key (header, query, or cookie name). Required when type is 'apiKey'."
+          },
+          "in": {
+            "type": "string",
+            "enum": [
+              "header",
+              "query",
+              "cookie"
+            ],
+            "description": "Location of the API key. Required when type is 'apiKey'."
+          },
+          "flows": {
+            "type": "object",
+            "description": "OAuth2 flows. Required when type is 'oauth2'.",
+            "properties": {
+              "implicit": {
+                "$ref": "#/definitions/oauthFlow"
+              },
+              "password": {
+                "$ref": "#/definitions/oauthFlow"
+              },
+              "clientCredentials": {
+                "$ref": "#/definitions/oauthFlow"
+              },
+              "authorizationCode": {
+                "$ref": "#/definitions/oauthFlow"
+              }
+            },
+            "additionalProperties": false
+          },
+          "openIdConnectUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "OpenID Connect discovery URL. Required when type is 'openIdConnect'."
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the security scheme"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

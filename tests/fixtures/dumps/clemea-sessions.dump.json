@@ -1,0 +1,616 @@
+{
+  "version": "https://developer.cisco.com/mcp_contract_dump/schema/0.3.4",
+  "dumpDetails": {
+    "toolName": "MCP Design-First",
+    "toolVersion": "0.2.3",
+    "description": "Comprehensive design for CLEMEA Session Discovery Server with search, planning, and analytics",
+    "createdAt": "2026-01-07T10:00:00Z",
+    "mcpServerConfig": {
+      "name": "clemea-sessions",
+      "transport": "stdio"
+    },
+    "dumpExecution": {
+      "mcpProtocolUsed": "2025-06-18",
+      "designEnvironment": {
+        "codingAssistant": "GitHub Copilot",
+        "targetLanguage": "python",
+        "guidelinesVersion": "0.4.0"
+      }
+    }
+  },
+  "serverInfo": {
+    "name": "clemea-sessions",
+    "version": "0.3.0",
+    "protocolVersion": "2025-06-18",
+    "capabilities": {
+      "tools": {},
+      "prompts": {}
+    }
+  },
+  "tools": [
+    {
+      "name": "search_sessions",
+      "description": "Search sessions by keywords in title, abstract, or speaker names",
+      "tags": ["search", "discovery"],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query - searches across session titles, abstracts, and speaker names"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of results to return",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": ["query"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "sessions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {"type": "string"},
+                "title": {"type": "string"},
+                "abstract": {"type": "string"},
+                "type": {"type": "string"},
+                "track": {"type": "string"},
+                "technicalLevel": {"type": "string"},
+                "speakers": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
+                "times": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "date": {"type": "string"},
+                      "startTime": {"type": "string"},
+                      "endTime": {"type": "string"},
+                      "room": {"type": "string"}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "total": {"type": "integer"},
+          "query": {"type": "string"}
+        }
+      },
+      "responseExamples": [
+        {
+          "description": "Search for automation sessions",
+          "input": {
+            "query": "network automation",
+            "limit": 5
+          },
+          "output": {
+            "sessions": [
+              {
+                "code": "DEVNET-1640",
+                "title": "Enhancing Network Automation with Event-Driven Architecture",
+                "abstract": "Explore how to implement event-driven architecture...",
+                "type": "DevNet",
+                "track": "DevNet",
+                "technicalLevel": "Introductory",
+                "speakers": ["Akhila Pamukuntla", "Kareem Iskander"],
+                "times": [
+                  {
+                    "date": "2026-02-12",
+                    "startTime": "16:30",
+                    "endTime": "17:15",
+                    "room": "DevNet Theater 1"
+                  }
+                ]
+              }
+            ],
+            "total": 12,
+            "query": "network automation"
+          }
+        }
+      ]
+    },
+    {
+      "name": "get_session",
+      "description": "Get detailed information for a specific session by code",
+      "tags": ["discovery"],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "session_code": {
+            "type": "string",
+            "description": "Session code (e.g., 'DEVNET-1640')"
+          }
+        },
+        "required": ["session_code"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "code": {"type": "string"},
+          "title": {"type": "string"},
+          "abstract": {"type": "string"},
+          "type": {"type": "string"},
+          "track": {"type": "string"},
+          "technicalLevel": {"type": "string"},
+          "length": {"type": "number"},
+          "technologies": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "speakers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "jobTitle": {"type": "string"},
+                "company": {"type": "string"},
+                "bio": {"type": "string"},
+                "speakerLevel": {"type": "string"}
+              }
+            }
+          },
+          "times": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {"type": "string"},
+                "startTime": {"type": "string"},
+                "endTime": {"type": "string"},
+                "room": {"type": "string"},
+                "capacity": {"type": "string"}
+              }
+            }
+          },
+          "packageTypes": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "newContent": {"type": "string"}
+        }
+      }
+    },
+    {
+      "name": "filter_sessions",
+      "description": "Filter sessions by multiple criteria (track, technology, speaker, level, date)",
+      "tags": ["search", "discovery"],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "track": {
+            "type": "string",
+            "description": "Filter by track (e.g., 'DevNet', 'Cisco University')"
+          },
+          "technology": {
+            "type": "string",
+            "description": "Filter by technology (e.g., 'DevOps', 'Meraki', 'Splunk')"
+          },
+          "technical_level": {
+            "type": "string",
+            "description": "Filter by technical level ('Introductory', 'Intermediate', 'Advanced')"
+          },
+          "speaker_name": {
+            "type": "string",
+            "description": "Filter by speaker name (partial match)"
+          },
+          "date": {
+            "type": "string",
+            "description": "Filter by date (YYYY-MM-DD format)"
+          },
+          "session_type": {
+            "type": "string",
+            "description": "Filter by session type (e.g., 'DevNet', 'Technical Breakout')"
+          },
+          "package_type": {
+            "type": "string",
+            "description": "Filter by package type ('Explorer', 'Full Conference', 'IT Leadership')"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of results",
+            "default": 20,
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": []
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "sessions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {"type": "string"},
+                "title": {"type": "string"},
+                "track": {"type": "string"},
+                "technicalLevel": {"type": "string"},
+                "speakers": {"type": "array", "items": {"type": "string"}},
+                "date": {"type": "string"},
+                "startTime": {"type": "string"}
+              }
+            }
+          },
+          "total": {"type": "integer"},
+          "filters_applied": {"type": "object"}
+        }
+      },
+      "responseExamples": [
+        {
+          "description": "Filter DevNet track sessions by technology",
+          "input": {
+            "track": "DevNet",
+            "technology": "DevOps",
+            "technical_level": "Introductory"
+          },
+          "output": {
+            "sessions": [
+              {
+                "code": "DEVNET-1640",
+                "title": "Enhancing Network Automation with Event-Driven Architecture",
+                "track": "DevNet",
+                "technicalLevel": "Introductory",
+                "speakers": ["Akhila Pamukuntla", "Kareem Iskander"],
+                "date": "2026-02-12",
+                "startTime": "16:30"
+              }
+            ],
+            "total": 8,
+            "filters_applied": {
+              "track": "DevNet",
+              "technology": "DevOps",
+              "technical_level": "Introductory"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "list_speakers",
+      "description": "List all speakers with their sessions and expertise",
+      "tags": ["discovery"],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string",
+            "description": "Optional search term to filter speakers by name or company"
+          },
+          "speaker_level": {
+            "type": "string",
+            "description": "Filter by speaker level (e.g., 'Hall of Fame Speaker', 'Distinguished Speaker')"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of speakers to return",
+            "default": 20,
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": []
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "speakers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "jobTitle": {"type": "string"},
+                "company": {"type": "string"},
+                "speakerLevel": {"type": "string"},
+                "sessionCount": {"type": "integer"},
+                "sessionCodes": {"type": "array", "items": {"type": "string"}}
+              }
+            }
+          },
+          "total": {"type": "integer"}
+        }
+      }
+    },
+    {
+      "name": "get_speaker",
+      "description": "Get detailed information about a specific speaker and their sessions",
+      "tags": ["discovery"],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "speaker_name": {
+            "type": "string",
+            "description": "Speaker's full or partial name"
+          }
+        },
+        "required": ["speaker_name"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "jobTitle": {"type": "string"},
+          "company": {"type": "string"},
+          "bio": {"type": "string"},
+          "speakerLevel": {"type": "string"},
+          "linkedIn": {"type": "string"},
+          "sessions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {"type": "string"},
+                "title": {"type": "string"},
+                "role": {"type": "string"},
+                "track": {"type": "string"},
+                "date": {"type": "string"},
+                "startTime": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "check_conflicts",
+      "description": "Check if given sessions have time conflicts (overlapping schedules)",
+      "tags": ["planning"],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "session_codes": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "List of session codes to check for conflicts"
+          }
+        },
+        "required": ["session_codes"]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "has_conflicts": {"type": "boolean"},
+          "conflicts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "session1": {"type": "string"},
+                "session2": {"type": "string"},
+                "overlap_date": {"type": "string"},
+                "overlap_time": {"type": "string"}
+              }
+            }
+          },
+          "conflict_free_schedule": {"type": "boolean"}
+        }
+      },
+      "responseExamples": [
+        {
+          "description": "Check multiple sessions for conflicts",
+          "input": {
+            "session_codes": ["DEVNET-1640", "DEVNET-2093", "AI-1170"]
+          },
+          "output": {
+            "has_conflicts": true,
+            "conflicts": [
+              {
+                "session1": "DEVNET-1640",
+                "session2": "AI-1170",
+                "overlap_date": "2026-02-12",
+                "overlap_time": "16:30-17:15"
+              }
+            ],
+            "conflict_free_schedule": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "list_tracks",
+      "description": "Get all available conference tracks with session counts",
+      "tags": ["analytics", "discovery"],
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "tracks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "session_count": {"type": "integer"},
+                "description": {"type": "string"}
+              }
+            }
+          },
+          "total_tracks": {"type": "integer"}
+        }
+      }
+    },
+    {
+      "name": "list_technologies",
+      "description": "Get all technologies covered with session counts",
+      "tags": ["analytics", "discovery"],
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "technologies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "session_count": {"type": "integer"}
+              }
+            }
+          },
+          "total_technologies": {"type": "integer"}
+        }
+      }
+    },
+    {
+      "name": "get_statistics",
+      "description": "Get aggregate statistics about sessions, tracks, speakers, and technologies",
+      "tags": ["analytics"],
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "group_by": {
+            "type": "string",
+            "description": "Group statistics by: 'track', 'technology', 'technical_level', 'date', or 'speaker_level'",
+            "enum": ["track", "technology", "technical_level", "date", "speaker_level"]
+          }
+        },
+        "required": []
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "total_sessions": {"type": "integer"},
+          "total_speakers": {"type": "integer"},
+          "total_tracks": {"type": "integer"},
+          "breakdown": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "category": {"type": "string"},
+                "count": {"type": "integer"},
+                "percentage": {"type": "number"}
+              }
+            }
+          }
+        }
+      },
+      "responseExamples": [
+        {
+          "description": "Get session statistics by track",
+          "input": {
+            "group_by": "track"
+          },
+          "output": {
+            "total_sessions": 250,
+            "total_speakers": 180,
+            "total_tracks": 8,
+            "breakdown": [
+              {"category": "DevNet", "count": 45, "percentage": 18.0},
+              {"category": "Security", "count": 62, "percentage": 24.8},
+              {"category": "Cisco University", "count": 38, "percentage": 15.2}
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "prompts": [
+    {
+      "name": "recommend_schedule",
+      "description": "Get AI-powered schedule recommendations based on interests and constraints",
+      "tags": ["planning", "recommendations"],
+      "arguments": [
+        {
+          "name": "interests",
+          "description": "Topics, technologies, or areas of interest (comma-separated)",
+          "required": true
+        },
+        {
+          "name": "technical_level",
+          "description": "Preferred technical level (Introductory, Intermediate, Advanced, or 'mixed')",
+          "required": false
+        },
+        {
+          "name": "available_dates",
+          "description": "Dates you're available (comma-separated YYYY-MM-DD)",
+          "required": false
+        },
+        {
+          "name": "max_sessions_per_day",
+          "description": "Maximum sessions per day",
+          "required": false
+        },
+        {
+          "name": "preferred_tracks",
+          "description": "Preferred tracks (comma-separated)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "compare_sessions",
+      "description": "Compare multiple sessions to help decide which to attend",
+      "tags": ["planning", "recommendations"],
+      "arguments": [
+        {
+          "name": "session_codes",
+          "description": "Session codes to compare (comma-separated)",
+          "required": true
+        },
+        {
+          "name": "comparison_criteria",
+          "description": "What matters most: 'speaker_expertise', 'technical_depth', 'new_content', 'practical_application'",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "speaker_insights",
+      "description": "Get comprehensive insights about a speaker's expertise and session focus",
+      "tags": ["discovery", "recommendations"],
+      "arguments": [
+        {
+          "name": "speaker_name",
+          "description": "Speaker's name or partial name",
+          "required": true
+        },
+        {
+          "name": "include_related_speakers",
+          "description": "Include speakers covering similar topics (yes/no)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "track_overview",
+      "description": "Get a comprehensive briefing on a specific track with key themes and highlights",
+      "tags": ["discovery", "recommendations"],
+      "arguments": [
+        {
+          "name": "track_name",
+          "description": "Name of the track (e.g., 'DevNet', 'Security')",
+          "required": true
+        },
+        {
+          "name": "focus_areas",
+          "description": "Specific technologies or topics to highlight within the track",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "resources": [],
+  "resourceTemplates": []
+}

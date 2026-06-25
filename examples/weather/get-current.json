@@ -1,0 +1,14 @@
+{
+  "temperature": 65,
+  "unit": "F",
+  "conditions": "Partly cloudy",
+  "humidity": 62,
+  "windSpeed": 8,
+  "windDirection": "NW",
+  "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "country": "USA"
+  },
+  "timestamp": "2025-12-10T12:00:00Z"
+}

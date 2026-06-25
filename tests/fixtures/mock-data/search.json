@@ -1,0 +1,8 @@
+{
+  "results": [
+    {"id": 52, "name": "Webex API", "kind": "API", "organization": "SBG"},
+    {"id": 73, "name": "Defense API", "kind": "API", "organization": "SBG"}
+  ],
+  "hasMore": false,
+  "cursor": null
+}

@@ -1,0 +1,47 @@
+{
+  "mcpdesc": "0.7.0",
+  "info": {
+    "name": "prompts-server",
+    "description": "Test server with prompts support",
+    "version": "1.0.0",
+    "protocolVersion": "2025-06-18"
+  },
+  "transports": [
+    {
+      "type": "stdio",
+      "command": "node",
+      "args": ["prompts-server.js"]
+    }
+  ],
+  "capabilities": {
+    "prompts": {
+      "listChanged": false
+    },
+    "tools": {
+      "listChanged": false
+    }
+  },
+  "prompts": [
+    {
+      "name": "review-code",
+      "description": "Review code for best practices and potential issues",
+      "arguments": [
+        {
+          "name": "code",
+          "description": "The code to review",
+          "required": true
+        },
+        {
+          "name": "language",
+          "description": "Programming language",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "summarize-text",
+      "description": "Summarize a long text into key points"
+    }
+  ],
+  "tools": []
+}

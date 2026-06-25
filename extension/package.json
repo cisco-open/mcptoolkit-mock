@@ -1,0 +1,48 @@
+{
+  "name": "mcpmock-vscode",
+  "displayName": "MCP Mock Builder",
+  "description": "AI-assisted mock data builder for Model Context Protocol servers",
+  "version": "0.1.0",
+  "publisher": "cisco",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Testing",
+    "Other"
+  ],
+  "keywords": [
+    "mcp",
+    "mock",
+    "testing",
+    "model-context-protocol"
+  ],
+  "activationEvents": [
+    "onCommand:mcpmock.buildWithAI"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "mcpmock.buildWithAI",
+        "title": "MCP Mock: Build Mock Data with AI",
+        "category": "MCP Mock"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.x",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.3",
+    "eslint": "^8.x",
+    "@typescript-eslint/eslint-plugin": "^6.x",
+    "@typescript-eslint/parser": "^6.x"
+  },
+  "dependencies": {}
+}

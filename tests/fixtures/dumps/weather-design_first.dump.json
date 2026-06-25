@@ -1,0 +1,118 @@
+{
+  "version": "https://developer.cisco.com/mcp_contract_dump/schema/0.3.1",
+  "dumpDetails": {
+    "toolName": "MCP Design-First",
+    "toolVersion": "0.1.0",
+    "description": "Initial design for Weather Service MCP server - demonstrating tools and prompts",
+    "createdAt": "2025-12-31T10:00:00Z",
+    "mcpServerConfig": {
+      "name": "weather-service",
+      "transport": "stdio"
+    },
+    "dumpExecution": {
+      "mcpProtocolUsed": "2025-06-18",
+      "designEnvironment": {
+        "codingAssistant": "GitHub Copilot",
+        "codingAssistantVersion": "v1.250.0",
+        "vscodeVersion": "1.96.0",
+        "targetLanguage": "python",
+        "targetFramework": "mcp-server-python",
+        "designGuidelines": "mcp-guidelines-v0.2.0"
+      }
+    }
+  },
+  "serverInfo": {
+    "name": "weather-service",
+    "version": "1.0.0",
+    "protocolVersion": "2025-06-18",
+    "capabilities": {
+      "tools": {},
+      "prompts": {}
+    }
+  },
+  "tools": [
+    {
+      "name": "get_weather",
+      "description": "Get current weather for a city",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name (e.g., 'San Francisco', 'London')"
+          },
+          "units": {
+            "type": "string",
+            "enum": ["celsius", "fahrenheit"],
+            "default": "celsius",
+            "description": "Temperature units"
+          }
+        },
+        "required": ["city"]
+      }
+    },
+    {
+      "name": "get_forecast",
+      "description": "Get multi-day weather forecast",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name for forecast"
+          },
+          "days": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 7,
+            "default": 5,
+            "description": "Number of forecast days (1-7)"
+          },
+          "units": {
+            "type": "string",
+            "enum": ["celsius", "fahrenheit"],
+            "default": "celsius",
+            "description": "Temperature units"
+          }
+        },
+        "required": ["city"]
+      }
+    }
+  ],
+  "resources": [],
+  "resourceTemplates": [],
+  "prompts": [
+    {
+      "name": "weather_briefing",
+      "description": "Generate daily weather briefing with activity recommendations",
+      "arguments": [
+        {
+          "name": "city",
+          "description": "City for weather briefing",
+          "required": true
+        },
+        {
+          "name": "activities",
+          "description": "Planned activities for the day (e.g., 'hiking, outdoor concert')",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "travel_planning",
+      "description": "Compare weather across multiple cities for travel planning",
+      "arguments": [
+        {
+          "name": "cities",
+          "description": "Comma-separated list of city names to compare",
+          "required": true
+        },
+        {
+          "name": "travel_dates",
+          "description": "Date range for travel (e.g., '2025-01-15 to 2025-01-20')",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

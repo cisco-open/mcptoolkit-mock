@@ -1,0 +1,589 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://developer.cisco.com/mcp_contract_dump/schema/0.3.6",
+  "title": "MCP Contract Dump",
+  "description": "Complete capability dump of an MCP server conforming to specification 2025-06-18",
+  "type": "object",
+  "required": ["version", "dumpDetails", "serverInfo", "tools", "resources", "resourceTemplates", "prompts"],
+  "definitions": {
+    "paginationDetectionResult": {
+      "type": "object",
+      "description": "Pagination detection result for a capability. Tracks whether pagination was used and how many pages/items were retrieved.",
+      "required": ["paginationDetected", "pagesRetrieved", "totalItems"],
+      "properties": {
+        "paginationDetected": {
+          "type": "boolean",
+          "description": "Whether nextCursor was seen when fetching this capability (always true when this object is present)"
+        },
+        "pagesRetrieved": {
+          "type": "integer",
+          "description": "Number of pages fetched to get all items for this capability",
+          "minimum": 1
+        },
+        "totalItems": {
+          "type": "integer",
+          "description": "Total number of items after exhaustive fetch",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Reference to the MCP dump schema version used to create this dump",
+      "const": "https://developer.cisco.com/mcp_contract_dump/schema/0.3.6"
+    },
+    "dumpDetails": {
+      "type": "object",
+      "description": "Metadata about the dump itself",
+      "required": ["toolName", "toolVersion", "createdAt", "mcpServerConfig", "dumpExecution"],
+      "properties": {
+        "toolName": {
+          "type": "string",
+          "description": "Name of the tool used to create the dump"
+        },
+        "toolVersion": {
+          "type": "string",
+          "description": "Version of the dump tool",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional human-readable description of how this dump was created or its purpose"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO 8601 timestamp of when the dump was created",
+          "format": "date-time"
+        },
+        "mcpServerConfig": {
+          "type": "object",
+          "description": "Configuration used to connect to the MCP server",
+          "required": ["transport"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Human-readable name of the server (auto-generated if not provided)"
+            },
+            "transport": {
+              "type": "string",
+              "enum": ["stdio", "streamable-http", "sse"],
+              "description": "Transport type used to connect (always 'streamable-http' for HTTP, never 'http')"
+            },
+            "url": {
+              "type": "string",
+              "description": "URL for HTTP-based transports",
+              "format": "uri"
+            },
+            "headers": {
+              "type": "object",
+              "description": "HTTP headers used for connection",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "command": {
+              "type": "string",
+              "description": "Command for stdio transport"
+            },
+            "args": {
+              "type": "array",
+              "description": "Arguments for stdio command",
+              "items": {
+                "type": "string"
+              }
+            },
+            "env": {
+              "type": "object",
+              "description": "Environment variables for stdio transport",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "dumpExecution": {
+          "type": "object",
+          "description": "Runtime information discovered during the connection and initialization with the MCP server",
+          "required": ["mcpProtocolUsed"],
+          "properties": {
+            "mcpProtocolUsed": {
+              "type": "string",
+              "description": "MCP protocol version used by the dump tool when communicating with the server. This indicates which protocol semantics were used during the dump process and affects the structure and interpretation of the dump.",
+              "enum": ["2025-06-18"]
+            },
+            "sessionIdSupported": {
+              "type": "boolean",
+              "description": "Whether the server returned a session ID during initialization. Only applicable for streamable-http transport. If true, the server is stateful and requires session tracking. If false, the server is stateless and does not use session management."
+            },
+            "sessionIdHeader": {
+              "type": "string",
+              "description": "The exact header name (with casing) used by the server for session management. REQUIRED when sessionIdSupported is true. This captures the actual header name observed in the server's HTTP initialization response, preserving exact casing as returned by the server. Common values: 'Mcp-Session-Id' (2025-03-26, 2025-06-18 spec), 'MCP-Session-Id' (2025-11-25 spec), 'mcp-session-id' (some SDK implementations). While HTTP headers are case-insensitive per RFC 7230, this field preserves exact server behavior for accurate client implementation, documentation, and gateway configuration.",
+              "examples": ["Mcp-Session-Id", "MCP-Session-Id", "mcp-session-id"]
+            },
+            "clientCapabilitiesSent": {
+              "type": "object",
+              "description": "Client capabilities that were sent by the dump tool during initialization. This documents what the client declared it supports, which may influence server behavior in some implementations. Useful for understanding the full initialization handshake context.",
+              "properties": {
+                "experimental": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "roots": {
+                  "type": "object",
+                  "properties": {
+                    "listChanged": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "sampling": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            },
+            "corsSupport": {
+              "type": "object",
+              "description": "CORS (Cross-Origin Resource Sharing) support detection for browser-based MCP clients. Only applicable for streamable-http and sse transports. Captures CORS response headers and preflight test results to determine if the server can be used from browser-based tools like MCP Inspector. Session information is captured in dumpExecution.sessionIdSupported and dumpExecution.sessionIdHeader.",
+              "properties": {
+                "browserReady": {
+                  "type": "boolean",
+                  "description": "Overall assessment: can this server be used from a browser? True if: 1) session header (if used) is exposed via Access-Control-Expose-Headers, 2) preflight allows POST method, 3) preflight allows session header (if used). False if any requirement is missing. Null if CORS detection was skipped or failed. Uses dumpExecution.sessionIdSupported and dumpExecution.sessionIdHeader for session checks."
+                },
+                "responseHeaders": {
+                  "type": "object",
+                  "description": "CORS headers from the initialize response",
+                  "properties": {
+                    "accessControlAllowOrigin": {
+                      "type": "string",
+                      "description": "Value of Access-Control-Allow-Origin header (e.g., '*', 'https://example.com', or null if not present)"
+                    },
+                    "accessControlExposeHeaders": {
+                      "type": "array",
+                      "description": "List of headers exposed to the browser via Access-Control-Expose-Headers",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "preflight": {
+                  "type": "object",
+                  "description": "Results from OPTIONS preflight request (if performed)",
+                  "properties": {
+                    "tested": {
+                      "type": "boolean",
+                      "description": "Whether a preflight request was sent"
+                    },
+                    "status": {
+                      "type": "integer",
+                      "description": "HTTP status code from OPTIONS request (typically 200 or 204 for success)"
+                    },
+                    "accessControlAllowOrigin": {
+                      "type": "string",
+                      "description": "Value of Access-Control-Allow-Origin header from preflight"
+                    },
+                    "accessControlAllowMethods": {
+                      "type": "array",
+                      "description": "List of methods allowed by preflight",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "accessControlAllowHeaders": {
+                      "type": "array",
+                      "description": "List of headers allowed by preflight",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": ["tested"]
+                }
+              }
+            },
+            "pingSupported": {
+              "type": "boolean",
+              "description": "Whether the server responded to a ping request. Ping is an optional MCP utility (spec 2025-11-25) used for connection health monitoring and session keepalive. True if server responded to ping, false if ping timed out or failed, undefined if ping was not tested. This information is useful for proxy/mock implementations and for understanding if coding agents can use ping for keepalive."
+            },
+            "pingLatencyMs": {
+              "type": "number",
+              "description": "Round-trip latency in milliseconds for the ping request. Represents baseline connection performance without business logic overhead. Only present when pingSupported is true. Useful for debugging slow connections and setting appropriate timeout values.",
+              "minimum": 0
+            },
+            "paginationSupport": {
+              "type": "object",
+              "description": "Tracks which capabilities use pagination (cursor-based). Only includes capabilities where nextCursor was detected during fetching. Omitted entirely if no pagination was detected. This is zero-overhead detection - no extra API calls needed.",
+              "properties": {
+                "tools": {
+                  "description": "Pagination details for tools capability",
+                  "$ref": "#/definitions/paginationDetectionResult"
+                },
+                "resources": {
+                  "description": "Pagination details for resources capability",
+                  "$ref": "#/definitions/paginationDetectionResult"
+                },
+                "resourceTemplates": {
+                  "description": "Pagination details for resource templates capability",
+                  "$ref": "#/definitions/paginationDetectionResult"
+                },
+                "prompts": {
+                  "description": "Pagination details for prompts capability",
+                  "$ref": "#/definitions/paginationDetectionResult"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": true
+        }
+      }
+    },
+    "serverInfo": {
+      "type": "object",
+      "description": "Information about the MCP server from initialize response",
+      "required": ["name", "version", "protocolVersion", "capabilities"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Server implementation name"
+        },
+        "version": {
+          "type": "string",
+          "description": "Server implementation version"
+        },
+        "protocolVersion": {
+          "type": "string",
+          "description": "MCP protocol version supported by server"
+        },
+        "capabilities": {
+          "type": "object",
+          "description": "Server capabilities",
+          "properties": {
+            "experimental": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "logging": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "prompts": {
+              "type": "object",
+              "properties": {
+                "listChanged": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "resources": {
+              "type": "object",
+              "properties": {
+                "subscribe": {
+                  "type": "boolean"
+                },
+                "listChanged": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "tools": {
+              "type": "object",
+              "properties": {
+                "listChanged": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        },
+        "instructions": {
+          "type": "string",
+          "description": "Optional instructions for using the server"
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "description": "List of tools exposed by the server",
+      "items": {
+        "type": "object",
+        "required": ["name", "inputSchema"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Unique name of the tool"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description of what the tool does"
+          },
+          "tags": {
+            "type": "array",
+            "description": "Tags for categorization (first tag used as primary category in documentation)",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Whether this tool is deprecated and should not be used in new code"
+          },
+          "inputSchema": {
+            "type": "object",
+            "description": "JSON Schema for the tool's input parameters",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "object"
+              },
+              "properties": {
+                "type": "object"
+              },
+              "required": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": true
+          },
+          "outputSchema": {
+            "type": "object",
+            "description": "JSON Schema for the tool's output (MCP 2025 spec) - structured response format",
+            "additionalProperties": true
+          },
+          "responseExamples": {
+            "type": "array",
+            "description": "Named examples of tool responses (enrichment field) - helps developers understand typical outputs",
+            "items": {
+              "type": "object",
+              "required": ["name", "data"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Short name for this example (e.g., 'Success', 'Empty result', 'Error')"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "What this example demonstrates or when it occurs"
+                },
+                "data": {
+                  "description": "The actual response data"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "resources": {
+      "type": "array",
+      "description": "List of resources exposed by the server",
+      "items": {
+        "type": "object",
+        "required": ["uri", "name"],
+        "properties": {
+          "uri": {
+            "type": "string",
+            "description": "Unique URI identifying the resource",
+            "format": "uri"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name of the resource"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of what the resource contains"
+          },
+          "tags": {
+            "type": "array",
+            "description": "Tags for categorization (first tag used as primary category in documentation)",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Whether this resource is deprecated and should not be used in new code"
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "MIME type of the resource content"
+          },
+          "contentExamples": {
+            "type": "array",
+            "description": "Named examples of resource content (enrichment field) - helps developers understand typical content",
+            "items": {
+              "type": "object",
+              "required": ["name", "data"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Short name for this example (e.g., 'Typical session', 'Empty state')"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "What this example demonstrates"
+                },
+                "data": {
+                  "description": "The actual resource content"
+                }
+              }
+            }
+          },
+          "annotations": {
+            "type": "object",
+            "description": "Additional metadata about the resource",
+            "properties": {
+              "audience": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "priority": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "resourceTemplates": {
+      "type": "array",
+      "description": "List of resource templates (URI templates) exposed by the server",
+      "items": {
+        "type": "object",
+        "required": ["uriTemplate", "name"],
+        "properties": {
+          "uriTemplate": {
+            "type": "string",
+            "description": "URI template (RFC 6570) for dynamic resources"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name of the template"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of what resources this template provides"
+          },
+          "tags": {
+            "type": "array",
+            "description": "Tags for categorization (first tag used as primary category in documentation)",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Whether this resource template is deprecated and should not be used in new code"
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "MIME type of resources created from this template"
+          },
+          "annotations": {
+            "type": "object",
+            "description": "Additional metadata about the template",
+            "properties": {
+              "audience": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "priority": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "prompts": {
+      "type": "array",
+      "description": "List of prompts exposed by the server",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Unique name of the prompt"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of what the prompt does"
+          },
+          "tags": {
+            "type": "array",
+            "description": "Tags for categorization (first tag used as primary category in documentation)",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Whether this prompt is deprecated and should not be used in new code"
+          },
+          "arguments": {
+            "type": "array",
+            "description": "Arguments that can be passed to the prompt",
+            "items": {
+              "type": "object",
+              "required": ["name"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the argument"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of what the argument does"
+                },
+                "required": {
+                  "type": "boolean",
+                  "description": "Whether this argument is required"
+                },
+                "examples": {
+                  "type": "array",
+                  "description": "Example values for this argument",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "roots": {
+      "type": "array",
+      "description": "List of roots if client supports roots capability",
+      "items": {
+        "type": "object",
+        "required": ["uri"],
+        "properties": {
+          "uri": {
+            "type": "string",
+            "description": "URI of the root",
+            "format": "uri"
+          },
+          "name": {
+            "type": "string",
+            "description": "Optional name for the root"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "mcpdesc": "0.7.0",
+  "info": {
+    "name": "weather-server",
+    "description": "Simple weather MCP server example for getting started with mcpmock",
+    "version": "1.0.0",
+    "protocolVersion": "2025-06-18"
+  },
+  "transports": [
+    {
+      "type": "stdio",
+      "command": "node",
+      "args": ["weather-server.js"]
+    }
+  ],
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    }
+  },
+  "tools": [
+    {
+      "name": "get-forecast",
+      "description": "Get weather forecast for a location. Returns temperature, conditions, and humidity.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name (e.g., 'San Francisco', 'New York')"
+          },
+          "days": {
+            "type": "number",
+            "description": "Number of days to forecast (1-7)",
+            "minimum": 1,
+            "maximum": 7,
+            "default": 3
+          }
+        },
+        "required": ["city"],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get-current",
+      "description": "Get current weather conditions for a location",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name"
+          }
+        },
+        "required": ["city"],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    }
+  ]
+}

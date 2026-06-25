@@ -1,0 +1,71 @@
+{
+  "version": "https://developer.cisco.com/mcp_contract_dump/schema/0.3.1",
+  "dumpDetails": {
+    "toolName": "mcpcontract",
+    "toolVersion": "0.10.0",
+    "description": "Test server with resources support",
+    "createdAt": "2026-01-04T00:00:00.000Z",
+    "mcpServerConfig": {
+      "name": "resources-server",
+      "transport": "stdio",
+      "command": "node",
+      "args": ["resources-server.js"]
+    },
+    "dumpExecution": {
+      "mcpProtocolUsed": "2025-06-18",
+      "clientCapabilitiesSent": {
+        "roots": {
+          "listChanged": true
+        },
+        "sampling": {}
+      }
+    }
+  },
+  "serverInfo": {
+    "name": "resources-server",
+    "version": "1.0.0",
+    "protocolVersion": "2025-06-18",
+    "capabilities": {
+      "resources": {
+        "subscribe": false,
+        "listChanged": false
+      }
+    }
+  },
+  "tools": [],
+  "resources": [
+    {
+      "uri": "config://app",
+      "name": "Application Configuration",
+      "description": "Application configuration settings",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "docs://readme",
+      "name": "README Documentation",
+      "description": "Project README file",
+      "mimeType": "text/plain"
+    },
+    {
+      "uri": "schema://user",
+      "name": "User Schema",
+      "description": "JSON Schema for user objects",
+      "mimeType": "application/schema+json"
+    }
+  ],
+  "resourceTemplates": [
+    {
+      "uriTemplate": "file:///{path}",
+      "name": "File Resource",
+      "description": "Access files by path",
+      "mimeType": "text/plain"
+    },
+    {
+      "uriTemplate": "data:///{id}",
+      "name": "Data Resource",
+      "description": "Access data objects by ID",
+      "mimeType": "application/json"
+    }
+  ],
+  "prompts": []
+}

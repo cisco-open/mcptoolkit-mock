@@ -1,0 +1,76 @@
+{
+  "version": "https://developer.cisco.com/mcp_contract_dump/schema/0.3.1",
+  "dumpDetails": {
+    "toolName": "mcpcontract",
+    "toolVersion": "0.10.0",
+    "description": "Simple weather MCP server example for getting started with mcpmock",
+    "createdAt": "2025-12-10T00:00:00.000Z",
+    "mcpServerConfig": {
+      "name": "weather-server",
+      "transport": "stdio",
+      "command": "node",
+      "args": ["weather-server.js"]
+    },
+    "dumpExecution": {
+      "mcpProtocolUsed": "2025-06-18",
+      "clientCapabilitiesSent": {
+        "roots": {
+          "listChanged": true
+        },
+        "sampling": {}
+      }
+    }
+  },
+  "serverInfo": {
+    "name": "weather-server",
+    "version": "1.0.0",
+    "protocolVersion": "2025-06-18",
+    "capabilities": {
+      "tools": {
+        "listChanged": false
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "get-forecast",
+      "description": "Get weather forecast for a location. Returns temperature, conditions, and humidity.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name (e.g., 'San Francisco', 'New York')"
+          },
+          "days": {
+            "type": "number",
+            "description": "Number of days to forecast (1-7)",
+            "minimum": 1,
+            "maximum": 7,
+            "default": 3
+          }
+        },
+        "required": ["city"],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get-current",
+      "description": "Get current weather conditions for a location",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "City name"
+          }
+        },
+        "required": ["city"],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    }
+  ],
+  "resources": [],
+  "resourceTemplates": [],
+  "prompts": []
+}

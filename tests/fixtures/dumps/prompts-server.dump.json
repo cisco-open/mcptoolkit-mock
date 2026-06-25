@@ -1,0 +1,62 @@
+{
+  "version": "https://developer.cisco.com/mcp_contract_dump/schema/0.3.1",
+  "dumpDetails": {
+    "toolName": "mcpcontract",
+    "toolVersion": "0.10.0",
+    "description": "Test server with prompts support",
+    "createdAt": "2025-12-31T00:00:00.000Z",
+    "mcpServerConfig": {
+      "name": "prompts-server",
+      "transport": "stdio",
+      "command": "node",
+      "args": ["prompts-server.js"]
+    },
+    "dumpExecution": {
+      "mcpProtocolUsed": "2025-06-18",
+      "clientCapabilitiesSent": {
+        "roots": {
+          "listChanged": true
+        },
+        "sampling": {}
+      }
+    }
+  },
+  "serverInfo": {
+    "name": "prompts-server",
+    "version": "1.0.0",
+    "protocolVersion": "2025-06-18",
+    "capabilities": {
+      "prompts": {
+        "listChanged": false
+      },
+      "tools": {
+        "listChanged": false
+      }
+    }
+  },
+  "tools": [],
+  "resources": [],
+  "resourceTemplates": [],
+  "prompts": [
+    {
+      "name": "review-code",
+      "description": "Review code for best practices and potential issues",
+      "arguments": [
+        {
+          "name": "code",
+          "description": "The code to review",
+          "required": true
+        },
+        {
+          "name": "language",
+          "description": "Programming language",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "summarize-text",
+      "description": "Summarize a long text into key points"
+    }
+  ]
+}

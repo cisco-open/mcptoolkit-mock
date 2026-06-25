@@ -1,0 +1,180 @@
+{
+  "mcpdesc": "0.7.0",
+  "info": {
+    "name": "mcp-inventory",
+    "description": "Cisco API/SDK Inventory MCP Server",
+    "version": "2.4.0",
+    "protocolVersion": "2025-06-18"
+  },
+  "transports": [
+    {
+      "type": "streamable-http",
+      "url": "http://localhost:3000/mcp"
+    }
+  ],
+  "capabilities": {
+    "completions": {},
+    "prompts": {
+      "listChanged": false
+    },
+    "resources": {
+      "listChanged": false
+    },
+    "tools": {
+      "listChanged": false
+    }
+  },
+  "tools": [
+    {
+      "name": "search",
+      "description": "Search and filter Cisco's API/SDK inventory. Supports filtering by kind (API/SDK/GROUP), organization (CN, SBG, CTG, CX, etc.), and name with partial matching. Returns paginated results with optional field selection.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["API", "SDK", "MCP", "GROUP"],
+            "description": "Filter by card type"
+          },
+          "organization": {
+            "type": "string",
+            "description": "Filter by organization code (CN, SBG, CTG, CX, Operations, CSDI, Splunk, Sales)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Filter by card name or alternate names"
+          },
+          "partial": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable partial/substring matching"
+          },
+          "details": {
+            "type": "string",
+            "enum": ["contacts", "releases", "api_quality", "api_insights", "info"],
+            "description": "Return only specific section"
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Pagination cursor from previous response"
+          },
+          "pageSize": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Number of results per page"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "refresh-cache",
+      "description": "Manually trigger an inventory refresh from the remote URL.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "stats",
+      "description": "Generate statistical analysis of the inventory with optional grouping.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "groupBy": {
+            "type": "string",
+            "enum": ["organization", "status", "kind", "deployment", "lifecycle"],
+            "description": "Group statistics by category"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list-organizations",
+      "description": "List all Cisco organizations present in the inventory.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "schema-version",
+      "description": "Get information about inventory schema version compatibility.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    }
+  ],
+  "resources": [
+    {
+      "name": "schema://API",
+      "title": "API Card Schema",
+      "uri": "schema://API",
+      "description": "JSON Schema for API cards",
+      "mimeType": "application/schema+json"
+    },
+    {
+      "name": "schema://SDK",
+      "title": "SDK Card Schema",
+      "uri": "schema://SDK",
+      "description": "JSON Schema for SDK cards",
+      "mimeType": "application/schema+json"
+    },
+    {
+      "name": "schema://MCP",
+      "title": "MCP Card Schema",
+      "uri": "schema://MCP",
+      "description": "JSON Schema for MCP cards",
+      "mimeType": "application/schema+json"
+    },
+    {
+      "name": "schema://GROUP",
+      "title": "GROUP Card Schema",
+      "uri": "schema://GROUP",
+      "description": "JSON Schema for GROUP cards",
+      "mimeType": "application/schema+json"
+    }
+  ],
+  "resourceTemplates": [
+    {
+      "name": "card",
+      "title": "Card Resource",
+      "uriTemplate": "card:///{id}",
+      "description": "Retrieve comprehensive details for a specific card by its numeric ID.",
+      "mimeType": "application/json"
+    }
+  ],
+  "prompts": [
+    {
+      "name": "search",
+      "description": "Guided API discovery with intelligent filtering."
+    },
+    {
+      "name": "api-quality-metrics",
+      "description": "Comprehensive API quality analysis with metrics and governance insights."
+    },
+    {
+      "name": "list-deprecated-apis",
+      "description": "Track deprecated and end-of-life APIs with sunset timelines and migration paths."
+    },
+    {
+      "name": "organization-report",
+      "description": "Comprehensive organization analysis across the Cisco API Inventory."
+    },
+    {
+      "name": "getting-started",
+      "description": "Complete guide to using the Cisco API Inventory MCP Server effectively."
+    }
+  ]
+}

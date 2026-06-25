@@ -1,0 +1,58 @@
+{
+  "name": "@cisco_open/mcpmock",
+  "version": "1.0.0-rc1",
+  "description": "MCP mock server toolkit - run, record, and build mock servers from mcpdesc files",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cisco-open/mcptoolkit-mock.git"
+  },
+  "homepage": "https://github.com/cisco-open/mcptoolkit-mock#readme",
+  "bugs": {
+    "url": "https://github.com/cisco-open/mcptoolkit-mock/issues"
+  },
+  "main": "./build/index.js",
+  "bin": {
+    "mcpmock": "./build/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "dev": "npm run build && node build/index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "clean": "rm -rf build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mock",
+    "server",
+    "testing",
+    "development"
+  ],
+  "author": "stsfartz (Cisco DevNet)",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "commander": "^12.1.0",
+    "handlebars": "^4.7.8",
+    "yaml": "^2.8.2"
+  },
+  "devDependencies": {
+    "@jest/globals": "^30.0.0",
+    "@types/handlebars": "^4.1.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.0.0",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11",
+    "typescript": "^5.3.0"
+  },
+  "overrides": {
+    "js-yaml": "^4.2.0"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "forecast": [
+    {
+      "date": "2025-12-10",
+      "temperature": {
+        "high": 68,
+        "low": 52,
+        "unit": "F"
+      },
+      "conditions": "Partly cloudy",
+      "humidity": 65,
+      "precipitation": 10
+    },
+    {
+      "date": "2025-12-11",
+      "temperature": {
+        "high": 72,
+        "low": 55,
+        "unit": "F"
+      },
+      "conditions": "Sunny",
+      "humidity": 55,
+      "precipitation": 0
+    },
+    {
+      "date": "2025-12-12",
+      "temperature": {
+        "high": 70,
+        "low": 54,
+        "unit": "F"
+      },
+      "conditions": "Clear",
+      "humidity": 58,
+      "precipitation": 0
+    }
+  ],
+  "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "country": "USA"
+  }
+}
