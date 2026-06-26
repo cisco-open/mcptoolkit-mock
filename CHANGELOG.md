@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Upgraded TypeScript from 5.9.3 to 6.0.3.
+- Upgraded `@types/node` from 20.x to 26.0.1 (the recommended version for TypeScript 6.0).
+- Upgraded `commander` from 12.x to 15.x (ESM-only; requires Node.js ≥ 22.12.0).
+- Dropped Node.js 20 (EOL April 2026); minimum supported version is now 22.12.0.
+- Updated CI matrix from `[20.x, 22.x, 24.x]` to `[22.x, 24.x, 26.x]`.
+
+### Fixed
+
+- Added `"types": ["node"]` to `tsconfig.json` to explicitly declare Node.js
+  type definitions, required by TypeScript 6.0's new default of `types: []`
+  (previously all `@types/*` packages were auto-included).
+
 ## [1.0.0-rc1] - 2026-06-25
 
 ### Initial open-source release
