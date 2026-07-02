@@ -9,12 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- toc -->
 
 - [[Unreleased]](#unreleased)
+- [[1.0.0] - 2026-07-02](#100---2026-07-02)
 - [[1.0.0-rc.3] - 2026-07-02](#100-rc3---2026-07-02)
 - [[1.0.0-rc1] - 2026-06-25](#100-rc1---2026-06-25)
 
 <!-- tocstop -->
 
 ## [Unreleased]
+
+## [1.0.0] - 2026-07-02
+
+First stable release, graduating `1.0.0-rc.3`. No code changes since the RC;
+all dependency and vulnerability checks passed clean.
 
 ## [1.0.0-rc.3] - 2026-07-02
 
