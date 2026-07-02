@@ -1,0 +1,9 @@
+{
+  "_comment": "Merge these scripts into the target repo's package.json. The 'prerelease' gate is the contract used by publish.yml and the release skill. Adjust test:links if the repo has no docs to check.",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:links": "tests/check-doc-links.sh",
+    "prerelease": "npm run test:links && npm run build && npm test"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "source": "github:ObjectIsAdvantag/oss-scaffold",
+  "version": "0.2.1",
+  "profile": "node-cli",
+  "npmAuth": "token",
+  "overrides": [
+    ".github/PULL_REQUEST_TEMPLATE.md",
+    ".github/ISSUE_TEMPLATE/config.yml",
+    ".github/ISSUE_TEMPLATE/bug_report.yml",
+    ".github/ISSUE_TEMPLATE/feature_request.yml"
+  ],
+  "packageName": "@cisco_open/mcptoolkit-mock",
+  "owner": "cisco-open",
+  "repoUrl": "https://github.com/cisco-open/mcptoolkit-mock"
+}

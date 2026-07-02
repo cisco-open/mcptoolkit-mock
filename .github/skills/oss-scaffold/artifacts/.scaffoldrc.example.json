@@ -1,0 +1,10 @@
+{
+  "source": "github:ObjectIsAdvantag/oss-scaffold",
+  "version": "0.2.0",
+  "profile": "node-npm-lib",
+  "npmAuth": "oidc",
+  "overrides": [],
+  "packageName": "@scope/name",
+  "owner": "your-github-owner",
+  "repoUrl": "https://github.com/your-github-owner/your-repo"
+}

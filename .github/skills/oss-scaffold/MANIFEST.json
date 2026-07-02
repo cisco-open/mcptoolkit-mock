@@ -1,0 +1,131 @@
+{
+  "scaffold": "oss-scaffold",
+  "schema": 1,
+  "markers": {
+    "start": "<!-- scaffold:{name}:start -->",
+    "end": "<!-- scaffold:{name}:end -->"
+  },
+  "profiles": {
+    "node-npm-lib": {
+      "extends": null,
+      "managed": [
+        {
+          "dest": ".github/workflows/ci.yml",
+          "src": "profiles/node-npm-lib/.github/workflows/ci.yml"
+        },
+        {
+          "dest": ".github/workflows/publish.yml",
+          "variants": {
+            "npmAuth": {
+              "token": "profiles/node-npm-lib/.github/workflows/publish.token.yml",
+              "oidc": "profiles/node-npm-lib/.github/workflows/publish.oidc.yml"
+            }
+          },
+          "default": "token"
+        },
+        {
+          "dest": ".github/dependabot.yml",
+          "src": "profiles/node-npm-lib/.github/dependabot.yml"
+        },
+        {
+          "dest": ".github/PULL_REQUEST_TEMPLATE.md",
+          "src": "shared/.github/PULL_REQUEST_TEMPLATE.md"
+        },
+        {
+          "dest": ".github/ISSUE_TEMPLATE/bug_report.yml",
+          "src": "shared/.github/ISSUE_TEMPLATE/bug_report.yml"
+        },
+        {
+          "dest": ".github/ISSUE_TEMPLATE/feature_request.yml",
+          "src": "shared/.github/ISSUE_TEMPLATE/feature_request.yml"
+        },
+        {
+          "dest": ".github/agents/oss-scaffold.agent.md",
+          "src": "shared/.github/agents/oss-scaffold.agent.md"
+        }
+      ],
+      "templated": [
+        {
+          "dest": ".github/ISSUE_TEMPLATE/config.yml",
+          "src": "shared/.github/ISSUE_TEMPLATE/config.yml"
+        },
+        {
+          "dest": ".github/skills/release/SKILL.md",
+          "src": "profiles/node-npm-lib/.github/skills/release/SKILL.md"
+        },
+        {
+          "dest": ".github/agents/release-manager.agent.md",
+          "src": "profiles/node-npm-lib/.github/agents/release-manager.agent.md"
+        },
+        {
+          "dest": "CONTRIBUTING.md",
+          "src": "shared/CONTRIBUTING.md",
+          "optOut": true
+        },
+        {
+          "dest": "CODE_OF_CONDUCT.md",
+          "src": "shared/CODE_OF_CONDUCT.md",
+          "optOut": true
+        },
+        {
+          "dest": "SECURITY.md",
+          "src": "shared/SECURITY.md",
+          "optOut": true
+        },
+        {
+          "dest": "SUPPORT.md",
+          "src": "shared/SUPPORT.md",
+          "optOut": true
+        },
+        {
+          "dest": "RELEASING.md",
+          "src": "shared/RELEASING.md"
+        }
+      ],
+      "packageScripts": "profiles/node-npm-lib/package.scripts.json"
+    },
+    "node-cli": {
+      "extends": "node-npm-lib",
+      "managed": [],
+      "templated": []
+    },
+    "generic": {
+      "extends": null,
+      "managed": [
+        {
+          "dest": ".github/PULL_REQUEST_TEMPLATE.md",
+          "src": "shared/.github/PULL_REQUEST_TEMPLATE.md"
+        },
+        {
+          "dest": ".github/agents/oss-scaffold.agent.md",
+          "src": "shared/.github/agents/oss-scaffold.agent.md"
+        },
+        {
+          "dest": ".github/ISSUE_TEMPLATE/config.yml",
+          "src": "shared/.github/ISSUE_TEMPLATE/config.yml"
+        }
+      ],
+      "templated": [
+        {
+          "dest": "CONTRIBUTING.md",
+          "src": "shared/CONTRIBUTING.md",
+          "optOut": true
+        },
+        {
+          "dest": "CODE_OF_CONDUCT.md",
+          "src": "shared/CODE_OF_CONDUCT.md",
+          "optOut": true
+        },
+        {
+          "dest": "SECURITY.md",
+          "src": "shared/SECURITY.md",
+          "optOut": true
+        },
+        {
+          "dest": "RELEASING.md",
+          "src": "shared/RELEASING.md"
+        }
+      ]
+    }
+  }
+}
