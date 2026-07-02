@@ -162,7 +162,7 @@ McpDesc files (`.mcpdesc.json`) contain the complete capability snapshot of an M
 **Where to get mcpdesc files:**
 - Generate from real servers using [mcpcontract](https://github.com/cisco-open/mcptoolkit-contract)
 - Use the examples in `tests/fixtures/mcpdesc/`
-- Create your own by following the schema in `schemas/mcpdesc-schema.json`
+- Write one by hand: follow the [MCP Description spec](https://github.com/cisco-open/mcptoolkit-contract/tree/main/spec) — the canonical source for the format
 
 ### Mock Data Overrides
 
