@@ -19,8 +19,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2026-07-02
 
-First stable release, graduating `1.0.0-rc.3`. No code changes since the RC;
-all dependency and vulnerability checks passed clean.
+First stable release, graduating `1.0.0-rc.3`.
+
+### Changed
+
+- **README: added `## The MCP Description (\`mcpdesc\`) format` section.**
+  Explains what an mcpdesc file is — borrowing the contract repo's phrasing
+  ("portable, machine-readable contract ... much like OpenAPI does for REST
+  APIs") — and points to
+  [mcptoolkit-contract](https://github.com/cisco-open/mcptoolkit-contract) as
+  the canonical source of truth for the specification, versioned schemas, and
+  governance. Includes a `mcpcontract dump` one-liner to generate an mcpdesc.
+  Placed between `## Quick Start` and `## Mock Data: Two Primary Workflows`,
+  where users first encounter the format requirement.
+- **docs/GETTING_STARTED.md: updated "Where to get mcpdesc files".**
+  Replaced the pointer to the local vendored `schemas/mcpdesc-schema.json` with
+  a link to the [MCP Description spec](https://github.com/cisco-open/mcptoolkit-contract/tree/main/spec)
+  in mcptoolkit-contract — the authoritative source for the format.
 
 ## [1.0.0-rc.3] - 2026-07-02
 

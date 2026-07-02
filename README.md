@@ -77,6 +77,29 @@ Returns auto-generated weather data from the mock server.
 > For a comprehensive walkthrough, see **[GETTING_STARTED.md](docs/GETTING_STARTED.md)**.
 
 
+## The MCP Description (`mcpdesc`) format
+
+An **MCP Description** (`mcpdesc`) is a portable, machine-readable contract that
+declares everything an MCP server offers — tools, resources, prompts, transports,
+and security — much like OpenAPI does for REST APIs.
+
+Every `mcpmock` command takes an mcpdesc file as input. To generate one from a
+live MCP server, use [`mcpcontract dump`](https://github.com/cisco-open/mcptoolkit-contract):
+
+```bash
+mcpcontract dump \
+  --transport streamable-http \
+  --url "https://your-mcp-server/mcp" \
+  --output server.mcpdesc.json
+```
+
+> **Canonical source:** the MCP Description specification, versioned schemas, and
+> full governance live in the
+> [mcptoolkit-contract](https://github.com/cisco-open/mcptoolkit-contract)
+> repository (`spec/` and `schemas/mcp-description/`). `mcpmock` vendors schema
+> **v0.7.0** from that source.
+
+
 ## Mock Data: Two Primary Workflows
 
 ### 1. Build Workflow
