@@ -1,0 +1,10 @@
+# Templated by oss-scaffold — {{repoUrl}} is filled from .scaffoldrc.json.
+# The URLs are yours to edit; they are preserved across `oss-scaffold update`.
+blank_issues_enabled: false
+contact_links:
+  - name: Security Vulnerability
+    url: {{repoUrl}}/security/advisories/new
+    about: Please report security issues privately via GitHub Security Advisories. See SECURITY.md for details.
+  - name: Question / Discussion
+    url: {{repoUrl}}/discussions
+    about: For usage questions or open-ended discussions, please use GitHub Discussions.

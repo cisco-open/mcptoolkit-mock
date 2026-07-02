@@ -21,21 +21,7 @@ You may use 'mcpmock' for:
 - ✅ Generate data with AI-assistance (requires Copilot CLI)
 - ✅ Custom override of existing mock data via JSON files
 
-## Quick Start
-
-```bash
-# Start mock weather server
-mcpmock run tests/fixtures/mcpdesc/weather-server.mcpdesc.json --verbose
-
-# In another terminal, call a tool
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get-current","arguments":{"city":"London"}}}' | \
-  mcpmock run tests/fixtures/mcpdesc/weather-server.mcpdesc.json
-# Returns auto-generated weather data
-```
-
-For a comprehensive walkthrough, see **[GETTING_STARTED.md](docs/GETTING_STARTED.md)**.
-
-## Installation
+## Quick Start 
 
 ```bash
 npm install -g @cisco_open/mcpmock
@@ -50,6 +36,46 @@ git clone https://github.com/cisco-open/mcptoolkit-mock.git
 cd mcptoolkit-mock
 npm install && npm run build && npm link
 ```
+
+**using stdio**
+
+mcpmock uses stdio transport by default: JSON-RPC 2.0 messages are sent via stdin, responses come back on stdout. No HTTP port, no curl — the shell *is* the client.
+
+```bash
+# One-shot — pipe a single request, get a response, process exits
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get-current","arguments":{"city":"London"}}}' | \
+  mcpmock run tests/fixtures/mcpdesc/weather-server.mcpdesc.json
+```
+
+Returns auto-generated weather data from the mock server.
+
+
+**using streamable HTTP**
+
+mcpmock start a Persistent HTTP server — stays running, accepts requests from any MCP client
+
+```bash
+mcpmock run tests/fixtures/mcpdesc/weather-server.mcpdesc.json \
+  --transport streamable-http \
+  --port 3000 \
+  --verbose
+```
+
+In another terminal, we'll invoke an MCP tool using the MCP Inspector CLI for example
+
+```bash
+npx @modelcontextprotocol/inspector --cli http://localhost:3000 \
+  --transport http \
+  --method tools/call \
+  --tool-name get-current \
+  --tool-arg city=London
+```
+
+Returns auto-generated weather data from the mock server.
+
+
+> For a comprehensive walkthrough, see **[GETTING_STARTED.md](docs/GETTING_STARTED.md)**.
+
 
 ## Mock Data: Two Primary Workflows
 
@@ -93,6 +119,7 @@ mcpmock run \
 ```
 
 👉 [Tutorial: Recording Traffic](docs/recording-traffic.md)
+
 
 ## Commands
 
@@ -262,6 +289,7 @@ npm run test:coverage # Coverage report
 ### VS Code Extension (⚠️ Experimental)
 
 For UI-based mock generation, there's an experimental VS Code extension. See [Tutorial: VS Code Extension](docs/vscode-extension.md) for setup. The CLI workflows are recommended for production use.
+
 
 ## License
 

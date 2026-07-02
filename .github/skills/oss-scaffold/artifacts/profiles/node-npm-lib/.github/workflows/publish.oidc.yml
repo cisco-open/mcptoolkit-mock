@@ -1,5 +1,9 @@
 # Managed by oss-scaffold — edit upstream (github.com/ObjectIsAdvantag/oss-scaffold), not here.
-# Profile: node-npm-lib, npmAuth: token. Local edits will fail the drift-check job.
+# Profile: node-npm-lib, npmAuth: oidc. Local edits will fail the drift-check job.
+#
+# Requires npm Trusted Publishing configured for this package on npmjs.com
+# (npm CLI >= 11.5). No NPM_TOKEN secret is used; auth comes from the OIDC
+# id-token exchanged at publish time.
 name: Publish to npm
 
 on:
@@ -9,7 +13,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write   # required for npm provenance attestation
+  id-token: write   # required for OIDC trusted publishing + provenance
 
 jobs:
   publish:
@@ -30,6 +34,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Ensure npm supports trusted publishing
+        run: npm install -g npm@latest
+
       - name: Build
         run: npm run build
 
@@ -48,8 +55,6 @@ jobs:
             echo "::error::Tag '${GITHUB_REF_NAME}' does not match package.json version '${PKG_VERSION}'"
             exit 1
           fi
-          # Pre-release versions (e.g. 1.0.0-rc.5) publish under the 'next'
-          # dist-tag so `npm install` keeps serving the latest stable release.
           if printf '%s' "$PKG_VERSION" | grep -q '-'; then
             DIST_TAG=next
           else
@@ -60,5 +65,3 @@ jobs:
 
       - name: Publish
         run: npm publish --provenance --access public --tag "${{ steps.release.outputs.dist_tag }}"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
