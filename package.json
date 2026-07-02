@@ -1,6 +1,6 @@
 {
   "name": "@cisco_open/mcpmock",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "description": "MCP mock server toolkit - run, record, and build mock servers from mcpdesc files",
   "type": "module",
   "repository": {
@@ -24,7 +24,8 @@
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "clean": "rm -rf build",
     "test:links": "tests/check-doc-links.sh",
-    "prerelease": "npm run test:links && npm run build && npm test"
+    "sync-badge": "node scripts/sync-badge.mjs",
+    "prerelease": "npm run sync-badge && npm run test:links && npm run build && npm test"
   },
   "keywords": [
     "mcp",

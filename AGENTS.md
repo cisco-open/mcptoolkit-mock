@@ -336,6 +336,12 @@ npm run test:watch
 # Coverage report
 npm run test:coverage
 
+# Sync README status badge with current version in package.json
+npm run sync-badge
+
+# Pre-release checks (badge sync + link check + build + tests)
+npm run prerelease
+
 # Manual CLI tests
 node build/index.js run --help
 node build/index.js run test.mcpdesc.json --verbose
@@ -662,7 +668,7 @@ When implementing features or fixes:
 
 3. **Test thoroughly** before committing:
    ```bash
-   npm run prerelease
+   npm run prerelease  # runs sync-badge + link check + build + tests
    ```
 
 4. **Release via a branch and pull request** — never commit releases directly to
