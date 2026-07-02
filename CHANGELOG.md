@@ -9,17 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- toc -->
 
 - [[Unreleased]](#unreleased)
-- [[1.0.0-rc.2] - 2026-07-02](#100-rc2---2026-07-02)
+- [[1.0.0-rc.3] - 2026-07-02](#100-rc3---2026-07-02)
 - [[1.0.0-rc1] - 2026-06-25](#100-rc1---2026-06-25)
 
 <!-- tocstop -->
 
 ## [Unreleased]
 
-## [1.0.0-rc.2] - 2026-07-02
+## [1.0.0-rc.3] - 2026-07-02
+
+### Added
+
+- **`scripts/sync-badge.mjs`** — syncs the README status badge with the version
+  in `package.json` automatically. Pre-release versions get an orange
+  `pre-release` badge; stable versions get a `brightgreen` `release` badge.
+- **`npm run sync-badge`** script and integrated into `npm run prerelease`
+  (runs before link check, build, and tests).
 
 ### Changed
 
+- **Version renamed from `1.0.0-rc1` to `1.0.0-rc.3`** — corrected to the
+  standard semver pre-release dot convention; consistent with how
+  `npm version prerelease --preid=rc` generates identifiers.
 - **Added `publishConfig` and `files` to `package.json`.** `publishConfig:
   {access: "public"}` is required for scoped npm packages to publish publicly.
   `files` pins the npm tarball to `build/`, `schemas/`, `examples/`, `LICENSE`,
@@ -29,6 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   atomically updates both `package.json` and `package-lock.json`. The old
   direct-to-`main` `git push --tags` flow is replaced with the branch/PR
   workflow (DCO sign-off required; tag pushed to `main` after the PR merges).
+- Added `tests/check-doc-links.sh` and `npm run test:links` (was missing,
+  causing `npm run prerelease` to fail).
 - Upgraded TypeScript from 5.9.3 to 6.0.3.
 - Upgraded `@types/node` from 20.x to 26.0.1 (the recommended version for TypeScript 6.0).
 - Upgraded `commander` from 12.x to 15.x (ESM-only; requires Node.js ≥ 22.12.0).
