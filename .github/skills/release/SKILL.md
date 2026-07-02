@@ -56,7 +56,19 @@ commit**, and a `v*` tag on `main` triggers the automated npm publish.
 
 ### 1. Prepare the release changes
 
-1. Bump `version` in `package.json` to the target version.
+1. Bump the version with `npm version` — this updates both `package.json` and
+   `package-lock.json` atomically. Use `--no-git-tag-version` so npm doesn't
+   create a commit or tag (those happen later, after the PR merges to `main`):
+   ```bash
+   # Set an exact version (e.g. first RC, or any explicit target)
+   npm version 1.1.0-rc.1 --no-git-tag-version
+
+   # Or let npm calculate the next pre-release bump
+   npm version prerelease --preid=rc --no-git-tag-version
+
+   # Or for a stable release
+   npm version minor --no-git-tag-version
+   ```
 2. Update `CHANGELOG.md`: move items from `## [Unreleased]` into a new
    `## [X.Y.Z] - YYYY-MM-DD` section under the right headings (Added, Changed,
    Deprecated, Removed, Fixed, Security). Update the compare/anchor links. Leave
@@ -107,7 +119,7 @@ version and repeat the flow.
 
 ## Checklist
 
-- [ ] `package.json` version bumped to target
+- [ ] Version bumped via `npm version <target> --no-git-tag-version` (updates both `package.json` and `package-lock.json`)
 - [ ] `CHANGELOG.md` updated (new section + links + empty Unreleased)
 - [ ] Project-specific release steps completed
 - [ ] `npm run prerelease` green

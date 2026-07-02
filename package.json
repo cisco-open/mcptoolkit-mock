@@ -1,6 +1,6 @@
 {
   "name": "@cisco_open/mcpmock",
-  "version": "1.0.0-rc1",
+  "version": "1.0.0-rc.2",
   "description": "MCP mock server toolkit - run, record, and build mock servers from mcpdesc files",
   "type": "module",
   "repository": {
@@ -54,6 +54,16 @@
     "ts-jest": "^29.4.11",
     "typescript": "^6.0.3"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "build/",
+    "schemas/",
+    "examples/",
+    "LICENSE",
+    "README.md"
+  ],
   "overrides": {
     "js-yaml": "^4.2.0"
   }

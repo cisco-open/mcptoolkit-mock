@@ -635,10 +635,22 @@ export class MockServer {
 
 When implementing features or fixes:
 
-1. **Update version** in `package.json` following semantic versioning:
+1. **Bump the version** using `npm version` — this updates both `package.json`
+   and `package-lock.json` atomically. Use `--no-git-tag-version` so npm doesn't
+   create a commit or tag (those happen later, after the PR merges to `main`).
+   Follow semantic versioning:
    - MAJOR (X.0.0): Breaking changes to CLI or schema support
    - MINOR (0.X.0): New commands/features (backward-compatible)
    - PATCH (0.0.X): Bug fixes, docs (non-breaking)
+
+   ```bash
+   # Stable release (let npm calculate the bump type)
+   npm version minor --no-git-tag-version
+
+   # Release candidate (explicit version or auto-increment)
+   npm version 1.1.0-rc.1 --no-git-tag-version
+   npm version prerelease --preid=rc --no-git-tag-version
+   ```
 
 2. **Update CHANGELOG.md** with changes under appropriate section:
    - `### Added` - New features
@@ -648,14 +660,30 @@ When implementing features or fixes:
    - `### Fixed` - Bug fixes
    - `### Security` - Security fixes
 
-3. **Test thoroughly** before committing
-
-4. **Commit and tag**:
+3. **Test thoroughly** before committing:
    ```bash
+   npm run prerelease
+   ```
+
+4. **Release via a branch and pull request** — never commit releases directly to
+   `main`. The npm publish is fully automated: pushing a `v*` tag triggers
+   [`.github/workflows/publish.yml`](.github/workflows/publish.yml).
+
+   ```bash
+   # 1. Branch off up-to-date main
+   git switch main && git pull
+   git switch -c release/X.Y.Z
+
+   # 2. Commit (DCO signed-off) and push
    git add .
-   git commit -m "Release v0.X.Y"
-   git tag v0.X.Y
-   git push && git push --tags
+   git commit -s -m "Release vX.Y.Z"
+   git push -u origin release/X.Y.Z
+   # open a PR against main; wait for CI and review
+
+   # 3. After PR merges, tag on main to trigger publish
+   git switch main && git pull
+   git tag vX.Y.Z
+   git push origin vX.Y.Z
    ```
 
 ## Quick Start for Development

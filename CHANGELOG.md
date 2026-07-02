@@ -5,10 +5,30 @@ All notable changes to mcpmock will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+<!-- Update me using: markdown-toc -i CHANGELOG.md --maxdepth 2 -->
+<!-- toc -->
+
+- [[Unreleased]](#unreleased)
+- [[1.0.0-rc.2] - 2026-07-02](#100-rc2---2026-07-02)
+- [[1.0.0-rc1] - 2026-06-25](#100-rc1---2026-06-25)
+
+<!-- tocstop -->
+
 ## [Unreleased]
+
+## [1.0.0-rc.2] - 2026-07-02
 
 ### Changed
 
+- **Added `publishConfig` and `files` to `package.json`.** `publishConfig:
+  {access: "public"}` is required for scoped npm packages to publish publicly.
+  `files` pins the npm tarball to `build/`, `schemas/`, `examples/`, `LICENSE`,
+  and `README.md`.
+- **Updated release process in `AGENTS.md` and `.github/skills/release/SKILL.md`.**
+  Version bumps now use `npm version <target> --no-git-tag-version`, which
+  atomically updates both `package.json` and `package-lock.json`. The old
+  direct-to-`main` `git push --tags` flow is replaced with the branch/PR
+  workflow (DCO sign-off required; tag pushed to `main` after the PR merges).
 - Upgraded TypeScript from 5.9.3 to 6.0.3.
 - Upgraded `@types/node` from 20.x to 26.0.1 (the recommended version for TypeScript 6.0).
 - Upgraded `commander` from 12.x to 15.x (ESM-only; requires Node.js ≥ 22.12.0).
