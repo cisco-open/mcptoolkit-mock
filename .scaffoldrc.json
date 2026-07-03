@@ -9,7 +9,7 @@
     ".github/ISSUE_TEMPLATE/bug_report.yml",
     ".github/ISSUE_TEMPLATE/feature_request.yml"
   ],
-  "packageName": "@cisco_open/mcptoolkit-mock",
+  "packageName": "@cisco_open/mcptoolkit_mock",
   "owner": "cisco-open",
   "repoUrl": "https://github.com/cisco-open/mcptoolkit-mock"
 }

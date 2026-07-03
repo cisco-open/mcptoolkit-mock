@@ -267,7 +267,7 @@ test:
     
     - name: Install dependencies
       run: |
-        npm install -g mcpmock@latest
+        npm install -g @cisco_open/mcptoolkit_mock@latest
         npm install -g mcptest@latest
     
     - name: Run tests against mock

@@ -31,7 +31,7 @@ jobs:
           node-version: '20'
       
       - name: Install mcpmock
-        run: npm install -g mcpmock
+        run: npm install -g @cisco_open/mcptoolkit_mock
       
       - name: Generate mocks
         run: |
@@ -62,7 +62,7 @@ jobs:
 test:
   image: node:20
   before_script:
-    - npm install -g mcpmock
+    - npm install -g @cisco_open/mcptoolkit_mock
   script:
     - mcpmock build --mcpdesc api.mcpdesc.json --output mocks/ --no-ai
     - mcpmock run api.mcpdesc.json --data mocks/ --port 3000 &
@@ -82,7 +82,7 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                sh 'npm install -g mcpmock'
+                sh 'npm install -g @cisco_open/mcptoolkit_mock'
             }
         }
         
@@ -187,7 +187,7 @@ git commit -m "Add recorded traffic"
 FROM node:20
 
 # Install mcpmock
-RUN npm install -g mcpmock
+RUN npm install -g @cisco_open/mcptoolkit_mock
 
 # Copy test files
 WORKDIR /app
@@ -219,7 +219,7 @@ services:
   mock-api:
     image: node:20
     command: >
-      sh -c "npm install -g mcpmock &&
+      sh -c "npm install -g @cisco_open/mcptoolkit_mock &&
              mcpmock run /app/api.mcpdesc.json 
                          --data /app/mocks/
                          --transport streamable-http
@@ -445,7 +445,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npm install -g mcpmock
+          npm install -g @cisco_open/mcptoolkit_mock
       
       - name: Cache mocks
         uses: actions/cache@v3
