@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Renamed npm package from `@cisco_open/mcpmock` to `@cisco_open/mcptoolkit_mock`.** This aligns with the convention across all mcptoolkit repos (contract, mock, test, editor)
+- **Renamed npm package from `@cisco_open/mcpmock` to `@cisco_open/mcptoolkit-mock`.** This aligns with the convention across all mcptoolkit repos (contract, mock, test, editor)
 
 ## [1.0.0] - 2026-07-02
 

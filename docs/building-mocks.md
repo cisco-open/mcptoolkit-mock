@@ -15,7 +15,7 @@ This is the **primary workflow** for mcpmock. You generate realistic, contextual
 ## Prerequisites
 
 - Node.js 20+
-- mcpmock installed (`npm install -g @cisco_open/mcptoolkit_mock`)
+- mcpmock installed (`npm install -g @cisco_open/mcptoolkit-mock`)
 - A mcpdesc file from mcpcontract
 
 ## Step-by-Step Guide

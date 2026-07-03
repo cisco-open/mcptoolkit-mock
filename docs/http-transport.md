@@ -276,7 +276,7 @@ describe('Weather API', () => {
 FROM node:20
 
 WORKDIR /app
-RUN npm install -g @cisco_open/mcptoolkit_mock
+RUN npm install -g @cisco_open/mcptoolkit-mock
 
 COPY api.mcpdesc.json .
 COPY mocks/ ./mocks/

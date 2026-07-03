@@ -520,7 +520,7 @@ npx @modelcontextprotocol/inspector http://localhost:3000
 
 ```bash
 # Install
-npm install -g @cisco_open/mcptoolkit_mock
+npm install -g @cisco_open/mcptoolkit-mock
 
 # Basic usage
 mcpmock run <file.mcpdesc.json>

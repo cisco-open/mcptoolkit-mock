@@ -24,7 +24,7 @@ You may use 'mcpmock' for:
 ## Quick Start 
 
 ```bash
-npm install -g @cisco_open/mcptoolkit_mock
+npm install -g @cisco_open/mcptoolkit-mock
 
 # Verify
 mcpmock --help
