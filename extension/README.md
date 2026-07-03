@@ -14,7 +14,7 @@ AI-assisted mock data builder for Model Context Protocol (MCP) servers.
 
 - VS Code 1.85.0 or higher
 - GitHub Copilot extension (for AI-assisted generation)
-- mcpmock CLI installed (`npm install -g mcpmock`)
+- mcpmock CLI installed (`npm install -g @cisco_open/mcptoolkit-mock`)
 
 ## Usage
 

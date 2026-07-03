@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- toc -->
 
 - [[Unreleased]](#unreleased)
+- [[1.1.0] - 2026-07-03](#110---2026-07-02)
 - [[1.0.0] - 2026-07-02](#100---2026-07-02)
 - [[1.0.0-rc.3] - 2026-07-02](#100-rc3---2026-07-02)
 - [[1.0.0-rc1] - 2026-06-25](#100-rc1---2026-06-25)
@@ -16,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- tocstop -->
 
 ## [Unreleased]
+
+## [1.1.0] - 2026-07-03
+
+### Changed
+
+- **Renamed npm package from `@cisco_open/mcpmock` to `@cisco_open/mcptoolkit-mock`.** This aligns with the convention across all mcptoolkit repos (contract, mock, test, editor)
 
 ## [1.0.0] - 2026-07-02
 
