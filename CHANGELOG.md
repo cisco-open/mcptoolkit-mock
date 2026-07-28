@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- toc -->
 
 - [[Unreleased]](#unreleased)
+- [[1.1.2] - 2026-07-28](#112---2026-07-28)
 - [[1.1.1] - 2026-07-28](#111---2026-07-28)
 - [[1.1.0] - 2026-07-03](#110---2026-07-02)
 - [[1.0.0] - 2026-07-02](#100---2026-07-02)
@@ -18,6 +19,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- tocstop -->
 
 ## [Unreleased]
+
+## [1.1.2] - 2026-07-28
+
+### Fixed
+
+- **Corrected CLI syntax across all user docs and the README.** `mcpmock run`
+  takes the mcpdesc path as a positional argument (not `--mcpdesc`);
+  `mcpmock record` uses `--upstream <url>` (not `--target`); `mcpmock import`
+  uses `--execution-log <path> --output <path>` (not positional args).
+- **Replaced non-existent `/health` readiness checks** in the CI/CD, HTTP, and
+  getting-started guides with JSON-RPC `POST` probes — the mock HTTP server
+  exposes no `/health` endpoint (any GET returns 405).
+- **Fixed broken relative links** in `docs/` (removed erroneous `docs/` prefixes
+  in GETTING_STARTED, corrected `../../` links to `extension/DEVELOPMENT.md` and
+  the mcpmock `CHANGELOG.md`).
+- **Replaced the deprecated `mcpcontract convert`** examples with the current
+  `mcpcontract dump` command.
+- **Corrected the getting-started mcpdesc example** to schema `0.7.0` with the
+  `info` object (was `0.6.0` with a top-level `serverInfo`), and fixed the HTTP
+  CORS header documentation to match the server's actual response.
 
 ## [1.1.1] - 2026-07-28
 

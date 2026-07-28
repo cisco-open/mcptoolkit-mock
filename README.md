@@ -8,7 +8,7 @@ You may use 'mcpmock' for:
 - **Demos**: Showcase MCP capabilities with controlled, reproducible responses
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Status: release](https://img.shields.io/badge/status-1.1.1-brightgreen.svg)](CHANGELOG.md)
+[![Status: release](https://img.shields.io/badge/status-1.1.2-brightgreen.svg)](CHANGELOG.md)
 [![Node.js: >=20.x](https://img.shields.io/badge/Node.js-%3E%3D20.x-brightgreen.svg)](https://nodejs.org/)
 [![mcpdesc](https://img.shields.io/endpoint?url=https://mcpdesc.org/badge/0.7.0.json)](https://mcpdesc.org)
 
@@ -132,7 +132,7 @@ Capture real traffic from a live server, then replay it. Best for regression tes
 mcpmock record \
   --mcpdesc weather-server.mcpdesc.json \
   --port 3000 \
-  --target http://real-server:8080 \
+  --upstream http://real-server:8080 \
   --output traffic.jsonl
 
 # Step 2: Replay recorded traffic
@@ -171,15 +171,15 @@ Uses a three-tier approach (Copilot CLI → runSubagent → Faker fallback) and 
 mcpmock record \
   --mcpdesc server.mcpdesc.json \
   --port 3000 \
-  --target http://real-server:8080 \
+  --upstream http://real-server:8080 \
   --output traffic.jsonl
 ```
 
 **Options**:
 - `--mcpdesc <file>` (required) - Path to mcpdesc file
-- `--port <number>` (required) - Port to listen on
-- `--target <url>` (required) - Real server URL to proxy to
+- `--upstream <url>` (required) - URL of the real MCP server to proxy to
 - `--output <file>` (required) - Output JSONL file for recorded traffic
+- `--port <number>` - Port for the proxy to listen on (default: 3000)
 - `--verbose` - Enable detailed logging
 
 > **Note**: Only HTTP transport is supported for recording. For stdio-based servers, use the [mcptest integration workflow](docs/mcptest-integration.md) (`mcpmock import`) or the build workflow instead.
@@ -189,7 +189,7 @@ mcpmock record \
 Convert mcptest execution logs to JSONL for replay:
 
 ```bash
-mcpmock import execution.json traffic.jsonl
+mcpmock import --execution-log execution.json --output traffic.jsonl
 mcpmock run server.mcpdesc.json --replay traffic.jsonl
 ```
 
@@ -212,7 +212,7 @@ mcpmock run weather-server.mcpdesc.json --replay traffic.jsonl --port 3000
 ```
 
 **Options**:
-- `--mcpdesc <file>` (required) - Path to mcpdesc file from mcpcontract
+- `<mcpdesc>` (required, positional) - Path to mcpdesc file from mcpcontract
 - `--data <dir>` - Directory containing custom mock data JSON files
 - `--transport <type>` - `stdio` (default) or `streamable-http`
 - `--port <number>` - Port for HTTP transport (default: 3000)

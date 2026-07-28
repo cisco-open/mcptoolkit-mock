@@ -168,7 +168,7 @@ mcpmock build \
 
 ## Development
 
-Want to improve the extension? See [extension/DEVELOPMENT.md](../../extension/DEVELOPMENT.md)
+Want to improve the extension? See [extension/DEVELOPMENT.md](../extension/DEVELOPMENT.md)
 
 **Extension code**:
 - `extension/src/extension.ts` - Command registration, UI
@@ -179,7 +179,7 @@ Want to improve the extension? See [extension/DEVELOPMENT.md](../../extension/DE
 
 - 📖 Read [Building Mocks](building-mocks.md) for CLI workflow (recommended)
 - 📖 Read [HTTP Transport](http-transport.md) for web integration
-- 🔧 Read [extension/DEVELOPMENT.md](../../extension/DEVELOPMENT.md) to contribute
+- 🔧 Read [extension/DEVELOPMENT.md](../extension/DEVELOPMENT.md) to contribute
 
 ## Summary
 

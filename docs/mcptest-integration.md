@@ -156,7 +156,7 @@ Start the mock server in replay mode:
 ```bash
 # Run mock server with recorded traffic
 mcpmock run \
-  --mcpdesc ../chess-coach/mcpcontract/mcpdesc/v0.7.0-dump.json \
+  ../chess-coach/mcpcontract/mcpdesc/v0.7.0-dump.json \
   --replay tests/mock-data/chess-coach-v0.7.0.jsonl \
   --verbose
 ```
@@ -188,7 +188,7 @@ cd /path/to/mcp-test
 # Test against mock server
 mcptest run \
   --scenarios tests/scenarios/ \
-  --server stdio:///path/to/mcp-mock/build/index.js?args=run,--mcpdesc,../chess-coach/mcpcontract/mcpdesc/v0.7.0-dump.json,--replay,tests/mock-data/chess-coach-v0.7.0.jsonl \
+  --server stdio:///path/to/mcp-mock/build/index.js?args=run,../chess-coach/mcpcontract/mcpdesc/v0.7.0-dump.json,--replay,tests/mock-data/chess-coach-v0.7.0.jsonl \
   --golden tests/golden \
   --golden-compare
 ```
@@ -274,7 +274,7 @@ test:
       run: |
         mcptest run \
           --scenarios tests/scenarios/ \
-          --server stdio://mcpmock?args=run,--mcpdesc,mcpdesc/v0.8.0-dump.json,--replay,mock-data/chess-coach-v0.8.0.jsonl \
+          --server stdio://mcpmock?args=run,mcpdesc/v0.8.0-dump.json,--replay,mock-data/chess-coach-v0.8.0.jsonl \
           --golden tests/golden \
           --golden-compare
 ```
@@ -465,7 +465,7 @@ The mcptest → mcpmock integration provides:
 ### Complete Flow
 
 ```
-1. mcpcontract convert    → Extract server capabilities
+1. mcpcontract dump       → Extract server capabilities
 2. mcptest generate    → Create test scenarios
 3. mcptest record      → Record real responses (with version tracking)
 4. mcpmock import      → Convert to JSONL format
@@ -477,7 +477,7 @@ The mcptest → mcpmock integration provides:
 
 - [mcptest Execution Logs Tutorial](../../mcp-test/docs/tutorials/execution-logs-workflow.md)
 - [mcptest CHANGELOG](../../mcp-test/CHANGELOG.md)
-- [mcpmock CHANGELOG](../../CHANGELOG.md)
+- [mcpmock CHANGELOG](../CHANGELOG.md)
 - [mcpcontract Documentation](../../mcp-contract/README.md)
 
 ## Feedback
