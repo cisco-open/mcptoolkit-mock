@@ -1,12 +1,20 @@
 # Multi-Version McpDesc Schema Support
 
-**Status**: Draft  
+**Status**: Partially implemented — the version registry shipped in [`src/lib/schema-versions.ts`](../../src/lib/schema-versions.ts)  
 **Created**: 2026-01-03  
+**Last reviewed**: 2026-07-28  
 **Author**: Design Discussion
+
+> **Current state (2026-07)**: mcpmock supports mcpdesc schema **0.7.0** only,
+> stored at `schemas/mcpdesc-schema-v0.7.0.json`. Schema versions are now plain
+> **semver strings** (e.g. `"0.7.0"` in the `mcpdesc` field), not the URL
+> identifiers shown in the historical examples below. The
+> `SUPPORTED_SCHEMA_VERSIONS` registry proposed here is implemented in
+> [`src/lib/schema-versions.ts`](../../src/lib/schema-versions.ts).
 
 ## Problem Statement
 
-Currently, mcpmock only supports a single mcpdesc schema version at a time (`0.4.0`), with the schema file stored at `schemas/mcpdesc-schema.json`. As the mcpdesc format evolves with new features (e.g., session ID in 0.4.0, CORS in 0.4.1), we need a strategy to:
+As the mcpdesc format evolves with new features (e.g., session ID, CORS, flat tags), we need a strategy to:
 
 1. Support multiple mcpdesc schema versions simultaneously
 2. Handle version-specific features gracefully
@@ -14,9 +22,13 @@ Currently, mcpmock only supports a single mcpdesc schema version at a time (`0.4
 4. Minimize maintenance burden
 5. Provide clear guidance on version support lifecycle
 
-## Current Situation
+## Historical Situation (at time of writing, 0.4.0 era)
 
-### Schema Versioning (as of 0.4.0)
+> The examples below use the **old URL-based** version identifiers and the
+> pre-0.10 `mcpdesc-schema.json` layout. They are retained for design context;
+> see the "Current state" note above for how versioning works today.
+
+### Schema Versioning (0.4.0 era)
 
 **Version 0.3.1** (contract-2.6.3.yaml):
 ```yaml
@@ -650,14 +662,14 @@ export class MockServer {
 
 1. Copy new schema file from mcpcontract:
    ```bash
-   cp ../mcp-contract/schemas/mcpdesc-schema.json schemas/mcpdesc-schema-0.X.Y.json
+   cp ../mcp-contract/schemas/mcpdesc-schema.json schemas/mcpdesc-schema-v0.X.Y.json
    ```
 
 2. Update `schema-versions.ts`:
    ```typescript
    '0.X.Y': {
-     url: 'https://developer.cisco.com/mcp-description/schema/0.X.Y',
-     schemaFile: 'mcpdesc-schema-0.X.Y.json',
+     version: '0.X.Y',
+     schemaFile: 'mcpdesc-schema-v0.X.Y.json',
      supported: true,
      deprecated: false,
      features: ['basic', 'newFeature']

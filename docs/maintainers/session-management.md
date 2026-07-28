@@ -210,8 +210,8 @@ Python FastMCP Server (returns "Mcp-Session-Id")
 
 ```json
 {
-  "version": "https://developer.cisco.com/mcp-description/schema/0.4.0",
-  "serverInfo": {
+  "mcpdesc": "0.7.0",
+  "info": {
     "name": "mcp-inventory",
     "version": "2.7.0",
     "protocolVersion": "2025-11-25",

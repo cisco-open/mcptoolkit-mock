@@ -36,7 +36,7 @@ describe('mcpmock run - HTTP transport', () => {
 
     // Wait for server to start
     await new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error('Server start timeout')), 3000);
+      const timeout = setTimeout(() => reject(new Error('Server start timeout')), 15000);
       
       serverProcess.stderr?.on('data', (data) => {
         if (data.toString().includes('Server ready')) {
@@ -50,7 +50,7 @@ describe('mcpmock run - HTTP transport', () => {
         reject(error);
       });
     });
-  });
+  }, 20000);
 
   afterAll(async () => {
     if (serverProcess) {

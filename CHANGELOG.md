@@ -39,6 +39,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Corrected the getting-started mcpdesc example** to schema `0.7.0` with the
   `info` object (was `0.6.0` with a top-level `serverInfo`), and fixed the HTTP
   CORS header documentation to match the server's actual response.
+- **Refreshed stale maintainer design docs.** Corrected
+  `docs/maintainers/multi-version-schema-support.md` to the current single-version
+  `0.7.0` semver registry (was the pre-0.10 URL-based `0.4.0` state), annotated
+  `mcpmock-design.md` and `ping.md` as historical (they reference schema files
+  that no longer exist), and fixed a stale URL-format schema example in
+  `session-management.md`.
 
 ## [1.1.1] - 2026-07-28
 
