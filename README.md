@@ -8,8 +8,9 @@ You may use 'mcpmock' for:
 - **Demos**: Showcase MCP capabilities with controlled, reproducible responses
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Status: release](https://img.shields.io/badge/status-1.1.0-brightgreen.svg)](CHANGELOG.md)
+[![Status: release](https://img.shields.io/badge/status-1.1.1-brightgreen.svg)](CHANGELOG.md)
 [![Node.js: >=20.x](https://img.shields.io/badge/Node.js-%3E%3D20.x-brightgreen.svg)](https://nodejs.org/)
+[![mcpdesc](https://img.shields.io/endpoint?url=https://mcpdesc.org/badge/0.7.0.json)](https://mcpdesc.org)
 
 ## Features
 
@@ -142,6 +143,7 @@ mcpmock run \
 ```
 
 👉 [Tutorial: Recording Traffic](docs/recording-traffic.md)
+👉 [Authoring Replay Datasets (design-first)](docs/authoring-replay-datasets.md)
 
 
 ## Commands

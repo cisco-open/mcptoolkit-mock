@@ -111,11 +111,19 @@ Check what was captured:
 cat traffic.jsonl
 ```
 
-**Format** (JSONL - one JSON object per line):
+**Format** (JSONL - one JSON object per line). Each interaction is **two lines**
+— a `request` and its `response` — linked by a shared `id`:
+
 ```json
-{"timestamp":"2026-01-01T10:00:00.000Z","method":"tools/call","params":{"name":"get-current","arguments":{"city":"London"}},"response":{"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"Current weather..."}]}}}
-{"timestamp":"2026-01-01T10:00:15.000Z","method":"tools/call","params":{"name":"get-forecast","arguments":{"city":"Paris","days":5}},"response":{"jsonrpc":"2.0","id":2,"result":{"content":[{"type":"text","text":"5-day forecast..."}]}}}
+{"timestamp":"2026-01-01T10:00:00.000Z","direction":"request","id":1,"method":"tools/call","params":{"name":"get-current","arguments":{"city":"London"}}}
+{"timestamp":"2026-01-01T10:00:00.001Z","direction":"response","id":1,"result":{"content":[{"type":"text","text":"Current weather..."}]}}
+{"timestamp":"2026-01-01T10:00:15.000Z","direction":"request","id":2,"method":"tools/call","params":{"name":"get-forecast","arguments":{"city":"Paris","days":5}}}
+{"timestamp":"2026-01-01T10:00:15.001Z","direction":"response","id":2,"result":{"content":[{"type":"text","text":"5-day forecast..."}]}}
 ```
+
+> **Authoring by hand?** See [Authoring Replay Datasets](authoring-replay-datasets.md)
+> for the complete format specification and matching semantics — useful when a
+> coding assistant generates a replay dataset from only a mcpdesc file.
 
 ### Step 5: Replay Recorded Traffic
 
@@ -123,7 +131,7 @@ Now run your mock server in replay mode:
 
 ```bash
 mcpmock run \
-  --mcpdesc weather-server.mcpdesc.json \
+  weather-server.mcpdesc.json \
   --replay traffic.jsonl \
   --transport streamable-http \
   --port 3000 \
@@ -220,26 +228,32 @@ Output:
 [DEBUG] ✗ No match above 70% threshold, using Faker
 ```
 
-## Converting to Mock Files
+## Importing mcptest Execution Logs
 
-You can convert recorded traffic to mock data files:
+The `mcpmock import` command converts an **mcptest execution log** (JSON) into
+the same replay JSONL format, so recorded test runs can be replayed directly:
 
 ```bash
-mcpmock import traffic.jsonl mocks/
+mcpmock import \
+  --execution-log execution-log.json \
+  --output traffic.jsonl
 ```
 
 **Output**:
 ```
-[MCPMOCK] Importing from traffic.jsonl...
-[MCPMOCK] Found 5 recorded interactions
-[MCPMOCK] Extracting unique tool responses...
-✓ Created: mocks/get-current.json
-✓ Created: mocks/get-forecast.json
+[MCPMOCK] Converting executions to JSONL format...
+
+✓ Import complete!
 ```
 
-**Now use as regular mocks**:
+The result is the same two-line request/response JSONL described above. Note this
+converts mcptest execution logs — not an existing `traffic.jsonl` — into replay
+data. To use captured responses as per-tool `--data` override files instead,
+edit them by hand or generate them with `mcpmock build`.
+
+**Then run with replay**:
 ```bash
-mcpmock run weather-server.mcpdesc.json --data mocks/ --port 3000
+mcpmock run weather-server.mcpdesc.json --replay traffic.jsonl --port 3000
 ```
 
 **See**: [mcptest Integration Tutorial](mcptest-integration.md) for more on `mcpmock import`
@@ -402,8 +416,8 @@ npm run test:pipeline
 # Complete workflow
 mcpmock record --port 3000 --target http://real:8080 --output traffic.jsonl  # Record
 # ... run tests ...
-mcpmock run --replay traffic.jsonl --port 3000  # Replay
-mcpmock import traffic.jsonl mocks/             # Convert to files
+mcpmock run server.mcpdesc.json --replay traffic.jsonl --port 3000  # Replay
+mcpmock import --execution-log run.json --output traffic.jsonl      # From mcptest log
 ```
 
 **Key takeaways**:
@@ -413,5 +427,6 @@ mcpmock import traffic.jsonl mocks/             # Convert to files
 - **2-level matching**: Exact match (100%) → Similar match (≥70%) → Faker fallback
 - Use `--similarity-threshold` to tune matching strictness (default: 70%)
 - Use `--debug` to see detailed matching analysis
-- Convert to mock files with `mcpmock import`
+- Convert mcptest execution logs to replay JSONL with `mcpmock import`
+- Hand-author replay datasets from a mcpdesc file — see [Authoring Replay Datasets](authoring-replay-datasets.md)
 - Best for regression testing with real server access

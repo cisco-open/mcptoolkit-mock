@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- toc -->
 
 - [[Unreleased]](#unreleased)
+- [[1.1.1] - 2026-07-28](#111---2026-07-28)
 - [[1.1.0] - 2026-07-03](#110---2026-07-02)
 - [[1.0.0] - 2026-07-02](#100---2026-07-02)
 - [[1.0.0-rc.3] - 2026-07-02](#100-rc3---2026-07-02)
@@ -17,6 +18,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- tocstop -->
 
 ## [Unreleased]
+
+## [1.1.1] - 2026-07-28
+
+### Added
+
+- **docs/authoring-replay-datasets.md: new design-first guide for replay JSONL.**
+  A precise, authoritative specification of the replay dataset format aimed at
+  coding assistants that must generate a replay dataset from scratch using only
+  a mcpdesc file as the source. Documents the `TrafficEntry` schema, JSONL
+  rules, the full matching algorithm (composite key, exact argument hash,
+  similarity scoring and threshold, Faker fallback, echoed request `id`),
+  authoring pitfalls (unique `id`s, skipped `null` `id`s, stripped
+  `_`-prefixed arguments), a worked success/error example, a step-by-step
+  authoring procedure, and `jq` validation commands. Linked from the README
+  Record Workflow and cross-linked with the recording tutorial.
+
+### Fixed
+
+- **docs/recording-traffic.md: corrected the replay JSONL format example.**
+  Replaced the inaccurate single-line combined request/response example with the
+  actual two-line format (separate `request` and `response` entries linked by a
+  shared `id`), matching the recorder, importer, and replayer implementations.
+- **docs/recording-traffic.md: fixed the `mcpmock run` replay invocation.**
+  The mcpdesc path is a positional argument, not a `--mcpdesc` flag.
+- **docs/recording-traffic.md: corrected the `mcpmock import` documentation.**
+  Replaced the non-existent `mcpmock import traffic.jsonl mocks/` usage with the
+  real command signature (`--execution-log <path> --output <path>`), which
+  converts an mcptest execution log into replay JSONL.
 
 ## [1.1.0] - 2026-07-03
 

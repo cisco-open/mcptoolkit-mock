@@ -31,6 +31,7 @@ check() {
 # User-facing docs
 echo "Checking user-facing docs..."
 check "docs/GETTING_STARTED.md"
+check "docs/authoring-replay-datasets.md"
 check "docs/building-mocks.md"
 check "docs/ci-cd-testing.md"
 check "docs/http-transport.md"
