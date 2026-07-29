@@ -1,8 +1,16 @@
 # MCP Mock Server Tool: Design Specification  
 
-**Status**: 
+**Status**: Historical — original design spec (superseded in places)  
 **Created**: 2025-12-09  
-**Related**: AGENTS.md, mcpdesc-schema.json v0.3.1
+**Last reviewed**: 2026-07-28  
+**Related**: AGENTS.md; this doc predates the mcpdesc format and references the v0.3.1 dump schema
+
+---
+
+> **Historical note (2026-07)**: This is the original design document, written
+> against the v0.3.1 dump-schema era. It is retained for context; the shipped
+> tool now consumes the mcpdesc schema `0.7.0` (`schemas/mcpdesc-schema-v0.7.0.json`).
+> Treat concrete schema and file references here as historical.
 
 ---
 

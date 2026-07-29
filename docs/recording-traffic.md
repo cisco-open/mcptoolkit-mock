@@ -30,7 +30,7 @@ This is the **alternative workflow** when you have access to a real MCP server. 
 mcpmock record \
   --mcpdesc weather-server.mcpdesc.json \
   --port 3000 \
-  --target http://real-weather-server:8080 \
+  --upstream http://real-weather-server:8080 \
   --output traffic.jsonl \
   --verbose
 ```
@@ -207,15 +207,15 @@ If no match meets the similarity threshold, mcpmock generates mock data using Fa
 **Similarity threshold** (default: 70%):
 ```bash
 # Strict matching (90% threshold)
-mcpmock run --replay traffic.jsonl --similarity-threshold 90 --port 3000
+mcpmock run server.mcpdesc.json --replay traffic.jsonl --similarity-threshold 90 --port 3000
 
 # Permissive matching (50% threshold)
-mcpmock run --replay traffic.jsonl --similarity-threshold 50 --port 3000
+mcpmock run server.mcpdesc.json --replay traffic.jsonl --similarity-threshold 50 --port 3000
 ```
 
 **Debug mode** shows matching details:
 ```bash
-mcpmock run --replay traffic.jsonl --debug --port 3000
+mcpmock run server.mcpdesc.json --replay traffic.jsonl --debug --port 3000
 ```
 
 Output:
@@ -266,7 +266,7 @@ Run specific test scenarios while recording:
 
 ```bash
 # Start recording
-mcpmock record --mcpdesc api.mcpdesc.json --port 3000 --target http://prod-api:8080 --output scenarios/login-flow.jsonl &
+mcpmock record --mcpdesc api.mcpdesc.json --port 3000 --upstream http://prod-api:8080 --output scenarios/login-flow.jsonl &
 
 # Run login test
 npm run test:login
@@ -284,16 +284,16 @@ Record different scenarios separately:
 
 ```bash
 # Record error scenarios
-mcpmock record --port 3000 --target http://api:8080 --output errors.jsonl
+mcpmock record --mcpdesc api.mcpdesc.json --port 3000 --upstream http://api:8080 --output errors.jsonl
 # Trigger error conditions...
 
 # Record success scenarios  
-mcpmock record --port 3000 --target http://api:8080 --output success.jsonl
+mcpmock record --mcpdesc api.mcpdesc.json --port 3000 --upstream http://api:8080 --output success.jsonl
 # Trigger success paths...
 
 # Combine for replay
 cat errors.jsonl success.jsonl > combined.jsonl
-mcpmock run --replay combined.jsonl --port 3000
+mcpmock run api.mcpdesc.json --replay combined.jsonl --port 3000
 ```
 
 ### Production Traffic Capture
@@ -305,11 +305,11 @@ mcpmock run --replay combined.jsonl --port 3000
 mcpmock record \
   --mcpdesc api.mcpdesc.json \
   --port 3000 \
-  --target https://production-api.example.com \
+  --upstream https://production-api.example.com \
   --output prod-traffic.jsonl
 
 # Use in dev/staging
-mcpmock run --replay prod-traffic.jsonl --port 3000
+mcpmock run api.mcpdesc.json --replay prod-traffic.jsonl --port 3000
 ```
 
 **Benefits**:
@@ -363,7 +363,7 @@ wc -l traffic.jsonl
 
 # Verify request format matches exactly
 # Enable verbose logging
-mcpmock run --replay traffic.jsonl --verbose
+mcpmock run server.mcpdesc.json --replay traffic.jsonl --verbose
 ```
 
 ### Large JSONL files
@@ -387,7 +387,7 @@ Testing a CI/CD pipeline:
 mcpmock record \
   --mcpdesc devnet-api.mcpdesc.json \
   --port 3000 \
-  --target https://api.devnet.com \
+  --upstream https://api.devnet.com \
   --output pipeline-success.jsonl
 
 # 2. Run your pipeline (uses proxy)
@@ -396,7 +396,7 @@ npm run test:pipeline
 
 # 3. Use recording for fast local testing
 mcpmock run \
-  --mcpdesc devnet-api.mcpdesc.json \
+  devnet-api.mcpdesc.json \
   --replay pipeline-success.jsonl \
   --port 3000
 
@@ -414,7 +414,7 @@ npm run test:pipeline
 
 ```bash
 # Complete workflow
-mcpmock record --port 3000 --target http://real:8080 --output traffic.jsonl  # Record
+mcpmock record --mcpdesc server.mcpdesc.json --port 3000 --upstream http://real:8080 --output traffic.jsonl  # Record
 # ... run tests ...
 mcpmock run server.mcpdesc.json --replay traffic.jsonl --port 3000  # Replay
 mcpmock import --execution-log run.json --output traffic.jsonl      # From mcptest log

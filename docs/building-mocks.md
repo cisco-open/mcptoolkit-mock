@@ -26,7 +26,7 @@ You need a mcpdesc file that describes your MCP server's capabilities:
 
 ```bash
 # Option A: Use mcpcontract to capture from real server
-mcpcontract convert --config server.json --output my-server.mcpdesc.json
+mcpcontract dump --config server.json --output my-server.mcpdesc.json
 
 # Option B: Use an example from mcpmock
 cp tests/fixtures/mcpdesc/weather-server.mcpdesc.json ./
@@ -113,13 +113,13 @@ Use the generated mocks with your mock server:
 ```bash
 # Stdio transport (CLI tools)
 mcpmock run \
-  --mcpdesc weather-server.mcpdesc.json \
+  weather-server.mcpdesc.json \
   --data mocks/ \
   --verbose
 
 # HTTP transport (web apps) - recommended
 mcpmock run \
-  --mcpdesc weather-server.mcpdesc.json \
+  weather-server.mcpdesc.json \
   --data mocks/ \
   --transport streamable-http \
   --port 3000 \
@@ -221,7 +221,7 @@ Let's build mocks for a complex API:
 
 ```bash
 # 1. Get dump from real server
-mcpcontract convert --config api-inventory.json --output api-inventory.mcpdesc.json
+mcpcontract dump --config api-inventory.json --output api-inventory.mcpdesc.json
 
 # 2. Generate mocks
 mcpmock build \
@@ -237,7 +237,7 @@ mcpmock build \
 
 # 3. Run server on specific port
 mcpmock run \
-  --mcpdesc api-inventory.mcpdesc.json \
+  api-inventory.mcpdesc.json \
   --data api-mocks/ \
   --transport streamable-http \
   --port 8080

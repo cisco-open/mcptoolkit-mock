@@ -157,7 +157,7 @@ EOF
 
 ```bash
 mcpmock run \
-  --mcpdesc my-server.mcpdesc.json \
+  my-server.mcpdesc.json \
   --data mocks/ \
   --port 3000
 ```
@@ -188,8 +188,8 @@ Mock doesn't currently support dynamic responses based on arguments, but you can
 
 **Option 1: Use recording** for specific parameter combinations:
 ```bash
-mcpmock record --port 3000 --target http://real-server:8080 --output scenarios.jsonl
-mcpmock run --replay scenarios.jsonl --port 3000
+mcpmock record --mcpdesc my-server.mcpdesc.json --port 3000 --upstream http://real-server:8080 --output scenarios.jsonl
+mcpmock run my-server.mcpdesc.json --replay scenarios.jsonl --port 3000
 ```
 
 **Option 2: Create separate dumps** for different scenarios

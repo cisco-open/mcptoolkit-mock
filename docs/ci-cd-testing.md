@@ -43,7 +43,7 @@ jobs:
       - name: Start mock server
         run: |
           mcpmock run \
-            --mcpdesc tests/fixtures/api.mcpdesc.json \
+            tests/fixtures/api.mcpdesc.json \
             --data mocks/ \
             --transport streamable-http \
             --port 3000 &
@@ -130,7 +130,7 @@ git commit -m "Add pre-generated mocks"
 - name: Start mock server
   run: |
     mcpmock run \
-      --mcpdesc tests/fixtures/api.mcpdesc.json \
+      tests/fixtures/api.mcpdesc.json \
       --data tests/mocks/ \
       --port 3000 &
     sleep 2
@@ -157,7 +157,7 @@ Record traffic once, replay in CI:
 mcpmock record \
   --mcpdesc api.mcpdesc.json \
   --port 3000 \
-  --target http://staging-api:8080 \
+  --upstream http://staging-api:8080 \
   --output traffic.jsonl
 
 # Commit recording
@@ -170,7 +170,7 @@ git commit -m "Add recorded traffic"
 - name: Replay traffic
   run: |
     mcpmock run \
-      --mcpdesc api.mcpdesc.json \
+      api.mcpdesc.json \
       --replay traffic.jsonl \
       --port 3000 &
     sleep 2
@@ -201,7 +201,7 @@ EXPOSE 3000
 
 # Start mock server and run tests
 CMD mcpmock run \
-    --mcpdesc api.mcpdesc.json \
+    api.mcpdesc.json \
     --data mocks/ \
     --transport streamable-http \
     --port 3000 & \
@@ -273,7 +273,7 @@ steps:
   - name: Test API ${{ matrix.api-version }}
     run: |
       mcpmock run \
-        --mcpdesc api-${{ matrix.api-version }}.mcpdesc.json \
+        api-${{ matrix.api-version }}.mcpdesc.json \
         --data mocks-${{ matrix.api-version }}/ \
         --port 3000 &
       sleep 2
@@ -293,7 +293,7 @@ jobs:
     steps:
       - run: |
           mcpmock run \
-            --mcpdesc api.mcpdesc.json \
+            api.mcpdesc.json \
             --data mocks/ \
             --port ${{ matrix.port }} &
           sleep 2
@@ -311,7 +311,7 @@ jobs:
     
 - name: Wait for server
   run: |
-    timeout 30 sh -c 'until curl -f http://localhost:3000/health; do sleep 1; done'
+    timeout 30 sh -c 'until curl -sf -X POST http://localhost:3000/v1/mcp >/dev/null 2>&1; do sleep 1; done'
 
 - name: Run tests
   run: npm test
@@ -341,9 +341,9 @@ jobs:
 
 **Solution**:
 ```bash
-# Add health check
+# Wait until the server accepts JSON-RPC POSTs (there is no /health endpoint)
 mcpmock run api.mcpdesc.json --port 3000 &
-until curl -f http://localhost:3000/health 2>/dev/null; do
+until curl -sf -X POST http://localhost:3000/v1/mcp >/dev/null 2>&1; do
   sleep 1
 done
 npm test
@@ -404,8 +404,8 @@ git add tests/mocks/
 Don't assume server is ready:
 
 ```bash
-mcpmock run --port 3000 &
-until curl -f http://localhost:3000/health; do sleep 1; done
+mcpmock run api.mcpdesc.json --port 3000 &
+until curl -sf -X POST http://localhost:3000/v1/mcp >/dev/null 2>&1; do sleep 1; done
 npm test
 ```
 
@@ -414,7 +414,7 @@ npm test
 Always kill background processes:
 
 ```bash
-mcpmock run --port 3000 &
+mcpmock run api.mcpdesc.json --port 3000 &
 MOCK_PID=$!
 trap "kill $MOCK_PID" EXIT
 
@@ -464,7 +464,7 @@ jobs:
       - name: Start mock server
         run: |
           mcpmock run \
-            --mcpdesc tests/fixtures/api.mcpdesc.json \
+            tests/fixtures/api.mcpdesc.json \
             --data tests/mocks/ \
             --transport streamable-http \
             --port 3000 \
@@ -474,7 +474,7 @@ jobs:
       
       - name: Wait for server
         run: |
-          timeout 30 sh -c 'until curl -f http://localhost:3000/health 2>/dev/null; do sleep 1; done'
+          timeout 30 sh -c 'until curl -sf -X POST http://localhost:3000/v1/mcp >/dev/null 2>&1; do sleep 1; done'
       
       - name: Run integration tests
         run: npm test

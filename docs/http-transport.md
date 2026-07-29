@@ -19,7 +19,7 @@ HTTP transport is the recommended approach for:
 
 ```bash
 mcpmock run \
-  --mcpdesc weather-server.mcpdesc.json \
+  weather-server.mcpdesc.json \
   --data mocks/ \
   --transport streamable-http \
   --port 3000
@@ -163,8 +163,8 @@ HTTP transport includes CORS headers by default:
 
 ```
 Access-Control-Allow-Origin: *
-Access-Control-Allow-Methods: POST, OPTIONS
-Access-Control-Allow-Headers: Content-Type
+Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS
+Access-Control-Allow-Headers: Content-Type, Authorization
 ```
 
 **Works in browser**:
@@ -207,7 +207,7 @@ Record HTTP traffic:
 mcpmock record \
   --mcpdesc api.mcpdesc.json \
   --port 3000 \
-  --target http://real-api:8080 \
+  --upstream http://real-api:8080 \
   --output traffic.jsonl
 
 # Your HTTP client connects to http://localhost:3000/v1/mcp
@@ -215,7 +215,7 @@ mcpmock record \
 
 # Replay
 mcpmock run \
-  --mcpdesc api.mcpdesc.json \
+  api.mcpdesc.json \
   --replay traffic.jsonl \
   --transport streamable-http \
   --port 3000
@@ -228,7 +228,7 @@ mcpmock run \
 ```bash
 # Terminal 1: Start mock server
 mcpmock run \
-  --mcpdesc api.mcpdesc.json \
+  api.mcpdesc.json \
   --data mocks/ \
   --transport streamable-http \
   --port 3000 \
@@ -329,8 +329,10 @@ mcpmock run api.mcpdesc.json --transport streamable-http --port $PORT
 
 **Solution**:
 ```bash
-# Check server is running
-curl http://localhost:3000/health
+# Check server is running (there is no /health endpoint; POST a JSON-RPC request)
+curl -sf -X POST http://localhost:3000/v1/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 
 # Verify port is not in use
 lsof -i :3000

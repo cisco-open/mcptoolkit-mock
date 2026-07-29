@@ -53,7 +53,7 @@ HTTP transport is recommended for testing, web applications, and development:
 
 ```bash
 mcpmock run \
-  --mcpdesc tests/fixtures/mcpdesc/weather-server.mcpdesc.json \
+  tests/fixtures/mcpdesc/weather-server.mcpdesc.json \
   --data examples/weather \
   --transport streamable-http \
   --port 3000 \
@@ -133,7 +133,7 @@ npx @modelcontextprotocol/inspector --cli http://localhost:3000 \
 
 **Benefits**: MCP-native tool, handles initialization automatically, cleaner syntax, ideal for scripting and automation.
 
-👉 **See**: [Tutorial: HTTP Transport](docs/http-transport.md) for more examples
+👉 **See**: [Tutorial: HTTP Transport](http-transport.md) for more examples
 
 ## Understanding the Components
 
@@ -143,9 +143,10 @@ McpDesc files (`.mcpdesc.json`) contain the complete capability snapshot of an M
 
 ```json
 {
-  "mcpdesc": "0.6.0",
-  "serverInfo": {
+  "mcpdesc": "0.7.0",
+  "info": {
     "name": "weather-server",
+    "description": "Simple weather MCP server example",
     "version": "1.0.0",
     "protocolVersion": "2025-06-18"
   },
@@ -202,14 +203,14 @@ mcpmock build \
 
 # Step 2: Run server with generated mocks
 mcpmock run \
-  --mcpdesc weather-server.mcpdesc.json \
+  weather-server.mcpdesc.json \
   --data my-mocks/ \
   --port 3000
 ```
 
 **When to use**: Starting new projects, need realistic test data, no access to real server.
 
-👉 **Full guide**: [Tutorial: Building Mocks](docs/building-mocks.md)
+👉 **Full guide**: [Tutorial: Building Mocks](building-mocks.md)
 
 ### Workflow 2: Record
 
@@ -220,12 +221,12 @@ Capture real traffic from a live server and replay with smart matching:
 mcpmock record \
   --mcpdesc weather-server.mcpdesc.json \
   --port 3000 \
-  --target http://real-server:8080 \
+  --upstream http://real-server:8080 \
   --output traffic.jsonl
 
 # Step 2: Replay recorded traffic (smart matching)
 mcpmock run \
-  --mcpdesc weather-server.mcpdesc.json \
+  weather-server.mcpdesc.json \
   --replay traffic.jsonl \
   --port 3000
 
@@ -235,14 +236,14 @@ mcpmock run \
 
 # Optional: Tune similarity threshold (default: 70%)
 mcpmock run \
-  --mcpdesc weather-server.mcpdesc.json \
+  weather-server.mcpdesc.json \
   --replay traffic.jsonl \
   --similarity-threshold 90 \
   --port 3000  # Stricter matching
 
 # Optional: Debug matching logic
 mcpmock run \
-  --mcpdesc weather-server.mcpdesc.json \
+  weather-server.mcpdesc.json \
   --replay traffic.jsonl \
   --debug \
   --port 3000
@@ -250,7 +251,7 @@ mcpmock run \
 
 **When to use**: Have access to real server, need exact responses, regression testing, smart handling of argument variations.
 
-👉 **Full guide**: [Tutorial: Recording Traffic](docs/recording-traffic.md)
+👉 **Full guide**: [Tutorial: Recording Traffic](recording-traffic.md)
 
 ### Manual Mock Creation (Advanced)
 
@@ -269,7 +270,7 @@ EOF
 mcpmock run server.mcpdesc.json --data manual-mocks/
 ```
 
-👉 **Full guide**: [Tutorial: Manual Mocks](docs/manual-mocks.md)
+👉 **Full guide**: [Tutorial: Manual Mocks](manual-mocks.md)
 
 ## Common Usage Patterns
 
@@ -286,7 +287,7 @@ mcpmock run my-server.mcpdesc.json --port 3000 --verbose
 
 1. **Get an mcpdesc** from your real MCP server:
    ```bash
-   mcpcontract convert --config server.json --output my-server.mcpdesc.json
+   mcpcontract dump --config server.json --output my-server.mcpdesc.json
    ```
 
 2. **Create custom responses** for key scenarios:
@@ -373,7 +374,7 @@ Basic server with 2 tools demonstrating common patterns.
 
 ```bash
 mcpmock run \
-  --mcpdesc tests/fixtures/mcpdesc/weather-server.mcpdesc.json \
+  tests/fixtures/mcpdesc/weather-server.mcpdesc.json \
   --data examples/weather \
   --port 3000 \
   --verbose
@@ -416,7 +417,7 @@ Production-like server from Cisco's API inventory with 5 tools demonstrating com
 
 ```bash
 mcpmock run \
-  --mcpdesc tests/fixtures/mcpdesc/api-inventory.mcpdesc.json \
+  tests/fixtures/mcpdesc/api-inventory.mcpdesc.json \
   --port 3000 \
   --verbose
 ```
@@ -458,8 +459,10 @@ npx @modelcontextprotocol/inspector --cli http://localhost:3000 \
 Make sure the server is running on the expected port:
 
 ```bash
-# Check if server is running
-curl http://localhost:3000/health
+# Check if server is running (there is no /health endpoint; POST a JSON-RPC request)
+curl -sf -X POST http://localhost:3000/v1/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 
 # Or check the logs
 mcpmock run my-server.mcpdesc.json --port 3000 --verbose

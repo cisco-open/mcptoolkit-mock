@@ -4,6 +4,14 @@
 **Date**: 2026-01-08  
 **Schema Version**: dump 0.3.4 → 0.3.5
 
+> **Historical note (2026-07)**: This document captures the original decision to
+> record ping support in the (then dump-format) description, using mcpcontract's
+> dumper. File paths such as `schemas/mcpdesc-schema.json`, `schemas/dump/0.3.5.json`,
+> and `schemas/latest.json` refer to that era and no longer exist in this repo —
+> mcpmock now vendors a single `schemas/mcpdesc-schema-v0.7.0.json`. Ping handling
+> in the mock server lives in [`src/lib/mock-server.ts`](../../src/lib/mock-server.ts)
+> (`handlePing`).
+
 ## Overview
 
 This document describes the decision to capture ping support in MCP server mcpdescs. Ping is an optional utility in the Model Context Protocol that allows either client or server to verify connection health through a simple request/response pattern.
