@@ -8,7 +8,7 @@ You may use 'mcpmock' for:
 - **Demos**: Showcase MCP capabilities with controlled, reproducible responses
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Status: release](https://img.shields.io/badge/status-1.1.2-brightgreen.svg)](CHANGELOG.md)
+[![Status: release](https://img.shields.io/badge/status-1.2.0-brightgreen.svg)](CHANGELOG.md)
 [![Node.js: >=20.x](https://img.shields.io/badge/Node.js-%3E%3D20.x-brightgreen.svg)](https://nodejs.org/)
 [![mcpdesc](https://img.shields.io/endpoint?url=https://mcpdesc.org/badge/0.7.0.json)](https://mcpdesc.org)
 
@@ -18,6 +18,7 @@ You may use 'mcpmock' for:
 - ✅ Stdio and HTTP transports (streamable-http)
 - ✅ Protocol-version agnostic (works with any MCP client version)
 - ✅ Automatic data generation from JSON schemas
+- ✅ `structuredContent` in `tools/call` responses when `outputSchema` is declared (MCP spec 2025-06-18)
 - ✅ Record data from real MCP traffic into JSONL documents and replay
 - ✅ Generate data with AI-assistance (requires Copilot CLI)
 - ✅ Custom override of existing mock data via JSON files
@@ -223,7 +224,9 @@ mcpmock run weather-server.mcpdesc.json --replay traffic.jsonl --port 3000
 
 **Custom mock data**: Place JSON files named after each tool (e.g., `get-forecast.json` → `get-forecast` tool) in the `--data` directory. Auto-generated data is used when no override exists.
 
-**Replay matching**: Exact matches (100%) and similar matches (≥threshold) return the recorded response; below-threshold falls back to auto-generated data. Tune strictness with `--similarity-threshold`.
+**`structuredContent`**: When a tool declares an `outputSchema`, the response includes both a backward-compatible `content` text block and a `structuredContent` object conforming to that schema. Faker generation uses the `outputSchema` shape when present.
+
+**Replay matching**: Exact matches (100%) and similar matches (≥threshold) return the recorded response; below-threshold falls back to auto-generated data. For `resources/read`, replay matching is URI-aware (`resources/read:<uri>`), so different resource URIs can return distinct recorded content, and recorded `error` responses are replayed as errors. Tune strictness with `--similarity-threshold`.
 
 **Testing HTTP transport** with MCP Inspector CLI:
 ```bash

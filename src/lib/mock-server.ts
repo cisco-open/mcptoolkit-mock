@@ -716,22 +716,61 @@ export class MockServer {
       }
     }
 
-    // Return in MCP tools/call response format
-    // According to MCP spec 2025-06-18, tools return content array
+    // Build MCP tools/call response per spec 2025-06-18.
+    // When the tool declares an outputSchema and the resolved payload is a
+    // JSON object (or array), also populate structuredContent so that hosts
+    // that consume the typed path receive data.  The content text block is
+    // always included for backward compatibility.
+    const resultPayload: Record<string, unknown> = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify(mockData, null, 2)
+        }
+      ]
+    };
+
+    if (tool.outputSchema && mockData !== null && typeof mockData === 'object') {
+      resultPayload.structuredContent = mockData;
+
+      // Debug: validate payload against outputSchema and warn on mismatch
+      if (this.debug) {
+        this.validateStructuredContent(tool.name, mockData, tool.outputSchema);
+      }
+    }
+
     const response: JSONRPCResponse = {
       jsonrpc: '2.0',
       id: request.id!,
-      result: {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(mockData, null, 2)
-          }
-        ]
-      }
+      result: resultPayload
     };
 
     return response;
+  }
+
+  /**
+   * Validate structuredContent against outputSchema using Ajv.
+   * Logs a warning to stderr if the payload does not conform.
+   * Only called in debug mode to avoid overhead in normal operation.
+   */
+  private validateStructuredContent(
+    toolName: string,
+    data: unknown,
+    schema: Record<string, unknown>
+  ): void {
+    try {
+      // Lazily import Ajv to avoid adding startup cost when validation is unused
+      const Ajv = require('ajv');
+      const ajv = new Ajv.default({ strict: false });
+      const validate = ajv.compile(schema);
+      const valid = validate(data);
+      if (!valid) {
+        const errors = validate.errors?.map((e: any) => `${e.instancePath} ${e.message}`).join('; ');
+        console.error(`${YELLOW}[WARN]${RESET} structuredContent for tool '${toolName}' does not fully conform to outputSchema: ${errors}`);
+      }
+    } catch {
+      // Ajv compile/validate failure — skip validation silently
+    }
   }
 
   /**
