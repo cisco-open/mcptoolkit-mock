@@ -20,6 +20,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Replay matching for `resources/read` is now URI-aware.** Recorded entries
+  are keyed by concrete resource URI (`resources/read:<uri>`), enabling
+  deterministic per-resource content replay (including template instances).
+- **Matched replay errors are surfaced for `resources/read`.** A recorded
+  `error` response is replayed as an error for the matching resource read,
+  consistent with `tools/call` behavior.
+
+### Changed
+
+- **Replay authoring docs updated for method-specific matching rules.**
+  `docs/authoring-replay-datasets.md` now documents `resources/read` URI-aware
+  keys and method-specific argument extraction.
+
 ## [1.1.2] - 2026-07-28
 
 ### Fixed

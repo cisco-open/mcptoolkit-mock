@@ -223,7 +223,7 @@ mcpmock run weather-server.mcpdesc.json --replay traffic.jsonl --port 3000
 
 **Custom mock data**: Place JSON files named after each tool (e.g., `get-forecast.json` → `get-forecast` tool) in the `--data` directory. Auto-generated data is used when no override exists.
 
-**Replay matching**: Exact matches (100%) and similar matches (≥threshold) return the recorded response; below-threshold falls back to auto-generated data. Tune strictness with `--similarity-threshold`.
+**Replay matching**: Exact matches (100%) and similar matches (≥threshold) return the recorded response; below-threshold falls back to auto-generated data. For `resources/read`, replay matching is URI-aware (`resources/read:<uri>`), so different resource URIs can return distinct recorded content, and recorded `error` responses are replayed as errors. Tune strictness with `--similarity-threshold`.
 
 **Testing HTTP transport** with MCP Inspector CLI:
 ```bash

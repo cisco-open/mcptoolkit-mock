@@ -59,6 +59,7 @@ export class TrafficReplayer {
   /**
    * Generate a composite key for smart matching
    * Format: "method:name" for tools/call and prompts/get
+   * Format: "resources/read:uri" for resources/read
    * Format: "method" for other methods
    */
   private getCompositeKey(method: string, params?: Record<string, unknown> | unknown[]): string {
@@ -69,25 +70,43 @@ export class TrafficReplayer {
         return `${method}:${name}`;
       }
     }
+
+    // For resources/read, include URI to avoid collisions between different resources
+    if (method === 'resources/read' && params && typeof params === 'object' && !Array.isArray(params)) {
+      const uri = (params as { uri?: string }).uri;
+      if (uri) {
+        return `${method}:${uri}`;
+      }
+    }
+
     return method;
   }
 
   /**
    * Extract clean arguments (remove _meta and other non-semantic fields)
    */
-  private getCleanArguments(params?: Record<string, unknown>): Record<string, unknown> {
+  private getCleanArguments(method: string, params?: Record<string, unknown>): Record<string, unknown> {
     if (!params) return {};
     
     const cleanArgs: Record<string, unknown> = {};
+    let source: Record<string, unknown> | undefined;
+
+    if (
+      params.arguments && typeof params.arguments === 'object' && !Array.isArray(params.arguments)
+    ) {
+      source = params.arguments as Record<string, unknown>;
+    } else if (method === 'resources/read') {
+      source = params;
+    }
+
+    if (!source) {
+      return cleanArgs;
+    }
     
-    // For tools/call and prompts/get, extract the arguments field
-    if (params.arguments && typeof params.arguments === 'object') {
-      const args = params.arguments as Record<string, unknown>;
-      // Remove metadata fields
-      for (const [key, value] of Object.entries(args)) {
-        if (key !== '_meta' && !key.startsWith('_')) {
-          cleanArgs[key] = value;
-        }
+    // For tools/call and prompts/get use params.arguments; for other methods use params
+    for (const [key, value] of Object.entries(source)) {
+      if (key !== '_meta' && !key.startsWith('_') && key !== 'name') {
+        cleanArgs[key] = value;
       }
     }
     
@@ -178,7 +197,7 @@ export class TrafficReplayer {
         const compositeKey = this.getCompositeKey(request.method, request.params);
         
         // Extract clean arguments for similarity matching
-        const cleanArgs = this.getCleanArguments(request.params as Record<string, unknown>);
+        const cleanArgs = this.getCleanArguments(request.method, request.params as Record<string, unknown>);
         const argsHash = this.getArgumentsHash(cleanArgs);
         
         if (!this.entries.has(compositeKey)) {
@@ -218,7 +237,7 @@ export class TrafficReplayer {
   getResponse(request: JSONRPCRequest): { response: JSONRPCResponse; entry: TrafficEntry } | null {
     const method = request.method;
     const compositeKey = this.getCompositeKey(method, request.params);
-    const requestArgs = this.getCleanArguments(request.params as Record<string, unknown>);
+    const requestArgs = this.getCleanArguments(method, request.params as Record<string, unknown>);
     const requestArgsHash = this.getArgumentsHash(requestArgs);
     
     this.debugLog(`\n${MAGENTA}=== Replay Matching Analysis ===${RESET}`, MAGENTA);
@@ -277,7 +296,7 @@ export class TrafficReplayer {
     this.debugLog(`  Calculating similarity scores (threshold: ${(this.similarityThreshold * 100).toFixed(0)}%)...`, CYAN);
     
     const candidates = storedResponses.map((stored) => {
-      const storedArgs = this.getCleanArguments(stored.requestParams);
+      const storedArgs = this.getCleanArguments(method, stored.requestParams);
       const similarity = this.calculateArgumentSimilarity(requestArgs, storedArgs);
       return { stored, similarity };
     });

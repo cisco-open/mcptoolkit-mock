@@ -15,6 +15,7 @@ import type { JSONRPCRequest, JSONRPCResponse, JSONRPCNotification } from '../..
 export interface MCPClientOptions {
   mcpdescPath: string;
   dataPath?: string;
+  replayPath?: string;
   verbose?: boolean;
 }
 
@@ -34,6 +35,10 @@ export class MCPTestClient {
       
       if (options.dataPath) {
         args.push('--data', options.dataPath);
+      }
+
+      if (options.replayPath) {
+        args.push('--replay', options.replayPath);
       }
       
       if (options.verbose) {

@@ -95,18 +95,25 @@ does the following:
 Requests are grouped by a composite key:
 
 - `tools/call` and `prompts/get` → `"<method>:<name>"` (e.g. `tools/call:get-customer`).
-- Every other method → just `"<method>"` (e.g. `resources/read`).
+- `resources/read` → `"resources/read:<uri>"` (e.g. `resources/read:quiz://rules`).
+- Every other method → just `"<method>"`.
 
-Consequence: for `resources/read` and similar methods there is no name segment,
-so **arguments are the only discriminator**. If you need different responses for
-different resources, they must differ in their `params`/arguments.
+Consequence: each concrete resource URI (including template instances such as
+`quiz://results/qz_res_REPLAY03`) is a distinct replay key, so deterministic
+per-resource content works naturally in replay datasets.
 
 ### 4.2 Level 1 — exact argument match
 
-Arguments are "cleaned" (keys named `_meta` or starting with `_` are removed),
-sorted, and hashed (MD5). If an incoming request's argument hash equals a
-recorded entry's hash, that recorded response is returned immediately. This is
-the path you want for deterministic per-argument responses.
+Arguments are "cleaned" (keys named `_meta`, starting with `_`, or named `name`
+are removed), sorted, and hashed (MD5). Method-specific extraction rules:
+
+- `tools/call`, `prompts/get`: clean `params.arguments`.
+- `resources/read`: clean top-level `params` (typically `{ "uri": "..." }`).
+- Other methods: no argument extraction (method-only matching).
+
+If an incoming request's argument hash equals a recorded entry's hash, that
+recorded response is returned immediately. This is the path you want for
+deterministic responses.
 
 ### 4.3 Level 2 — similarity match
 
