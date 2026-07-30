@@ -1,6 +1,6 @@
 {
   "name": "@cisco_open/mcptoolkit-mock",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "MCP mock server toolkit - run, record, and build mock servers from mcpdesc files",
   "type": "module",
   "repository": {

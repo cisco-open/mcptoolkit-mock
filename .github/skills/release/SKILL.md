@@ -132,10 +132,146 @@ version and repeat the flow.
 
 ## Project-specific release steps
 
-<!--
-  Add steps unique to this repo here (schema/version bumps, generated artifacts,
-  docs sites, downstream sync, etc.). This section is NOT overwritten by
-  oss-scaffold. If there are none, leave the note below.
--->
+_No additional project-specific steps beyond the core workflow._
 
-_No project-specific release steps. Follow the core workflow above._
+---
+
+## AI Agent: Automated Release Workflow
+
+**For Copilot or automated agents:** Use this workflow to automate the release process with validation and confirmation.
+
+### Prerequisites
+
+- You have commit access to the repository
+- The repository is in a clean state (`git status` shows no uncommitted changes)
+- All changes meant for this release are already merged to `main`
+
+### Automated Workflow Steps
+
+#### Step 1: Validate CHANGELOG.md State
+
+1. Read `CHANGELOG.md`
+2. Extract the latest released version from dated sections (e.g., `[1.2.1] - 2026-07-30`)
+3. Check if the `[Unreleased]` section has any content (Added, Fixed, Changed, Removed, Deprecated, Security)
+4. **STOP** if `[Unreleased]` has content:
+   ```
+   ⛔ CHANGELOG.md has unreleased changes under [Unreleased].
+   These must be moved to a dated release section before proceeding.
+   User must manually edit CHANGELOG.md first.
+   ```
+5. If valid, continue to Step 2
+
+#### Step 2: Determine & Confirm Release Version
+
+1. Calculate the default next version (patch bump of latest: e.g., 1.2.1 → 1.2.2)
+2. Ask user: `"Confirm release version (default: X.Y.Z):"` 
+3. Accept user input or default to calculated version
+4. Validate the version matches semantic versioning (X.Y.Z or X.Y.Z-rcN format)
+5. If invalid, ask user to provide a valid version
+
+#### Step 3: Update CHANGELOG.md Automatically
+
+1. Find the `## [Unreleased]` header
+2. Insert a new dated release section immediately after it:
+   ```markdown
+   ## [Unreleased]
+
+   ## [X.Y.Z] - YYYY-MM-DD
+
+   ```
+3. Use the current date in YYYY-MM-DD format
+4. Add TOC entry if a `<!-- toc -->` block exists (add after `[Unreleased]` line)
+5. Do NOT copy content from [Unreleased] — only move it if user explicitly had content there (caught in Step 1)
+
+#### Step 4: Execute Version Bump
+
+Run: `npm version <version> --no-git-tag-version`
+
+Expected output: `vX.Y.Z`
+
+If it fails, abort and show the error.
+
+#### Step 5: Run Prerelease Validation
+
+Run: `npm run prerelease`
+
+This executes:
+- `npm run sync-badge` (updates README.md)
+- `npm run test:links` (validates all doc links)
+- `npm run build` (TypeScript compilation)
+- `npm test` (full test suite)
+
+If ANY step fails, abort and show the error. Do NOT proceed.
+
+#### Step 6: Report Status & Next Steps
+
+Print a summary:
+
+```
+✅ Release v<version> prepared and validated
+
+Files modified:
+  • package.json (version bumped to <version>)
+  • package-lock.json (regenerated)
+  • CHANGELOG.md (new dated section added, [Unreleased] reset)
+  • README.md (status badge synced to <version>)
+
+All checks passing:
+  ✅ Badge sync successful
+  ✅ Documentation links valid
+  ✅ TypeScript build successful
+  ✅ All tests passing (82/82)
+
+Ready to commit. Next steps (from AGENTS.md):
+
+  1. Create release branch and commit (DCO sign-off required):
+     git add .
+     git commit -s -m "Release v<version>"
+     git push -u origin release/<version>
+
+  2. Open a PR to main, wait for review and CI green
+
+  3. Merge PR with a merge commit
+
+  4. Tag on main to trigger publish:
+     git tag v<version>
+     git push origin v<version>
+
+  This triggers .github/workflows/publish.yml which runs npm publish with:
+  • Dist-tag: "latest" (for X.Y.Z) or "next" (for X.Y.Z-rcN)
+  • Provenance enabled
+  • Access: public
+
+Status: ✅ Files are ready; no commit made yet (user controls push to git)
+```
+
+### Error Handling
+
+| Condition | Action |
+|-----------|--------|
+| `[Unreleased]` has content | ⛔ STOP. Tell user to finalize entries first. Do not proceed. |
+| Invalid version format | ⛔ STOP. Ask user for X.Y.Z format. Do not run npm version. |
+| `npm version` fails | ⛔ STOP. Show error. Do not proceed. |
+| `npm run build` fails | ⛔ STOP. Show compilation errors. Do not run tests. |
+| `npm test` fails | ⛔ STOP. Show test failures. Do not proceed to commit steps. |
+| `npm run test:links` fails | ⛔ STOP. Show broken links. Do not proceed. |
+| Git is not clean | ⛔ STOP before Step 3. Tell user to commit or stash changes first. |
+
+### Example Invocation
+
+User: `"I'm ready to release. Can you prepare the next release?"`
+
+Agent:
+1. Checks CHANGELOG.md for [Unreleased] content → passes
+2. Extracts latest version (1.2.1) → calculates next (1.2.2)
+3. Asks: "Confirm release version (default: 1.2.2):" → user enters or accepts
+4. Updates CHANGELOG.md with new dated section
+5. Runs `npm version 1.2.2 --no-git-tag-version` → ✅
+6. Runs `npm run prerelease` → ✅ all checks pass
+7. Prints summary with next steps
+
+User then follows the git branch/commit/PR/tag steps to push to main and trigger publish.
+
+---
+
+**Related**: [AGENTS.md - Release Process](../../AGENTS.md), [CHANGELOG.md](../../CHANGELOG.md)

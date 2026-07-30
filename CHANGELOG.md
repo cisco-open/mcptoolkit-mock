@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- toc -->
 
 - [[Unreleased]](#unreleased)
+- [[1.2.2] - 2026-07-30](#122---2026-07-30)
 - [[1.2.1] - 2026-07-30](#121---2026-07-30)
 - [[1.2.0] - 2026-07-30](#120---2026-07-30)
 - [[1.1.2] - 2026-07-28](#112---2026-07-28)
@@ -21,6 +22,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- tocstop -->
 
 ## [Unreleased]
+
+## [1.2.2] - 2026-07-30
+
+### Added
+
+- **AI-powered release automation skill in `.github/skills/release/SKILL.md`.**
+  New "AI Agent: Automated Release Workflow" section provides step-by-step
+  guidance for automated release execution. The skill:
+  - Validates CHANGELOG.md (show-stopper if `[Unreleased]` has content)
+  - Calculates default next version and confirms with user
+  - Automatically updates CHANGELOG.md with new dated release section
+  - Executes `npm version` and full `npm run prerelease` validation suite
+  - Reports detailed status and next git/tag steps for user
+  - Includes comprehensive error handling for all failure modes
+
+- **Release workflow documentation clarified** for all team members. The skill
+  explains why `sync-badge` auto-updates README.md (now expected during
+  `npm run prerelease`) and documents the full branch/PR/tag flow from AGENTS.md.
 
 ## [1.2.1] - 2026-07-30
 
