@@ -12,6 +12,13 @@ This is the **primary workflow** for mcpmock. You generate realistic, contextual
 - Need realistic test data without manual creation
 - Want consistent, reproducible responses
 
+> **`outputSchema` and `structuredContent`**: When a tool in the mcpdesc
+> declares an `outputSchema`, the generated mock files are shaped by that
+> schema, and the running server returns the data in both `content` (text) and
+> `structuredContent` (typed JSON object). This means the full output contract
+> is exercised from the first `mcpmock run` — no extra configuration needed.
+> See [Manual Mocks](manual-mocks.md) for the response shape details.
+
 ## Prerequisites
 
 - Node.js 20+

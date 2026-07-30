@@ -32,6 +32,51 @@ Each tool gets one JSON file: `<tool-name>.json`
 
 That's it! No special wrapping needed.
 
+### `structuredContent` and `outputSchema`
+
+When a tool in the mcpdesc declares an `outputSchema`, mcpmock automatically
+returns the mock data in **two places**:
+
+1. `content[0].text` — the JSON-stringified payload (backward-compatible text path).
+2. `structuredContent` — the same data as a first-class typed JSON object.
+
+This means your mock file should be a JSON object (or array) that conforms to
+the tool's declared `outputSchema`, so that hosts consuming the typed path
+receive correctly-shaped data.
+
+**Example** — a tool declaring:
+```json
+"outputSchema": {
+  "type": "object",
+  "properties": {
+    "sessionId": { "type": "string" },
+    "state": { "type": "string", "enum": ["active","paused","completed"] },
+    "totalQuestions": { "type": "integer" }
+  }
+}
+```
+
+**File**: `mocks/create-session.json`
+```json
+{
+  "sessionId": "qz_sess_001",
+  "state": "active",
+  "totalQuestions": 5
+}
+```
+
+The response the client receives:
+```json
+{
+  "content": [{ "type": "text", "text": "{\"sessionId\":\"qz_sess_001\",\"state\":\"active\",\"totalQuestions\":5}" }],
+  "structuredContent": { "sessionId": "qz_sess_001", "state": "active", "totalQuestions": 5 }
+}
+```
+
+If no `outputSchema` is declared, the response only contains `content` (no
+`structuredContent`), which is the legacy behavior for text-only tools.
+
+
 ## Examples
 
 ### Simple Response

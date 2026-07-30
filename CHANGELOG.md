@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- toc -->
 
 - [[Unreleased]](#unreleased)
+- [[1.2.0] - 2026-07-30](#120---2026-07-30)
 - [[1.1.2] - 2026-07-28](#112---2026-07-28)
 - [[1.1.1] - 2026-07-28](#111---2026-07-28)
 - [[1.1.0] - 2026-07-03](#110---2026-07-02)
@@ -19,6 +20,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- tocstop -->
 
 ## [Unreleased]
+
+## [1.2.0] - 2026-07-30
+
+### Added
+
+- **`structuredContent` in `tools/call` responses when `outputSchema` is declared.**
+  Per MCP spec 2025-06-18, when a tool declares an `outputSchema` the mock now
+  populates `structuredContent` with the resolved JSON payload alongside the
+  backward-compatible `content` text block.  This applies to all three data
+  sources: file overrides (`--data`), example selection, and Faker generation.
+  Hosts and clients that consume the typed `structuredContent` path now receive
+  data from the mock; text-only consumers are unaffected (no breaking change).
+
+  Example response shape for a tool with `outputSchema`:
+
+  ```json
+  {
+    "content": [{ "type": "text", "text": "{\"sessionId\":\"mock-sessionId-001\",\"state\":\"active\",…}" }],
+    "structuredContent": { "sessionId": "mock-sessionId-001", "state": "active", "totalQuestions": 42, "currentQuestion": 0 }
+  }
+  ```
+
+- **`outputSchema`-driven Faker generation.**
+  When a tool declares an `outputSchema` and no override or example is
+  available, the Faker generator now produces data shaped by that schema
+  (respecting types, enums, formats, and `minimum`/`maximum` constraints)
+  rather than the generic success envelope.  This gives a correct first-run
+  experience for any tool with a declared output contract — no `--data`
+  directory and no recording required.
+
+- **Optional debug validation of `structuredContent` against `outputSchema`.**
+  When `--debug` is set, the mock validates the resolved payload against the
+  tool's `outputSchema` using Ajv and logs a warning to stderr if the data does
+  not conform.  This catches drift between authored fixtures and the declared
+  output contract at design time without affecting normal operation.
+
+- **New test fixture** `tests/fixtures/mcpdesc/structured-output-server.mcpdesc.json`:
+  a dedicated mcpdesc with three tools (`create-session`, `get-status`,
+  `list-results`) covering object `outputSchema`, no `outputSchema`, and array
+  `outputSchema` respectively — used by the new integration suite.
+
+- **7 new integration tests** in
+  `tests/integration/structured-content.test.ts` covering the Faker path and
+  the `--data` override path for `structuredContent` emission and backward
+  compatibility.
 
 ### Fixed
 
@@ -33,7 +79,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Replay authoring docs updated for method-specific matching rules.**
   `docs/authoring-replay-datasets.md` now documents `resources/read` URI-aware
-  keys and method-specific argument extraction.
+  keys, method-specific argument extraction, and the `structuredContent` field
+  in hand-authored replay responses.
 
 ## [1.1.2] - 2026-07-28
 

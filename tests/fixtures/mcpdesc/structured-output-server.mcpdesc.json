@@ -1,0 +1,96 @@
+{
+  "mcpdesc": "0.7.0",
+  "info": {
+    "name": "structured-output-server",
+    "description": "Test server with tools that declare outputSchema to exercise structuredContent",
+    "version": "1.0.0",
+    "protocolVersion": "2025-06-18"
+  },
+  "transports": [
+    {
+      "type": "stdio",
+      "command": "node",
+      "args": ["structured-output-server.js"]
+    }
+  ],
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    }
+  },
+  "tools": [
+    {
+      "name": "create-session",
+      "description": "Create a new quiz session and return its ID and initial state.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "topic": {
+            "type": "string",
+            "description": "Topic for the quiz session"
+          }
+        },
+        "required": ["topic"],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "description": "Unique session identifier"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["active", "paused", "completed"],
+            "description": "Current session state"
+          },
+          "totalQuestions": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Total number of questions"
+          },
+          "currentQuestion": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Index of the current question"
+          }
+        },
+        "required": ["sessionId", "state", "totalQuestions", "currentQuestion"]
+      }
+    },
+    {
+      "name": "get-status",
+      "description": "Get the status of a session. No outputSchema declared (text-only tool).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string"
+          }
+        },
+        "required": ["sessionId"],
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list-results",
+      "description": "List all results, returning an array. outputSchema has array type.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "outputSchema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "score": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        }
+      }
+    }
+  ]
+}
