@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- toc -->
 
 - [[Unreleased]](#unreleased)
+- [[1.2.1] - 2026-07-30](#121---2026-07-30)
 - [[1.2.0] - 2026-07-30](#120---2026-07-30)
 - [[1.1.2] - 2026-07-28](#112---2026-07-28)
 - [[1.1.1] - 2026-07-28](#111---2026-07-28)
@@ -20,6 +21,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- tocstop -->
 
 ## [Unreleased]
+
+## [1.2.1] - 2026-07-30
+
+### Fixed
+
+- **Security dependency remediation for transitive advisories.** Updated
+  dependency resolution to use patched transitive versions of `js-yaml` and
+  `brace-expansion` via `package.json` overrides and lockfile refresh.
+- **Upgraded `ts-jest` patch release** to `29.4.12` as part of the audit fix
+  pass.
+- **Production dependency audit is clean.** `npm audit --omit=dev` reports zero
+  vulnerabilities after the update.
+
+### Notes
+
+- Full `npm audit` still reports high-severity findings in the Jest/ts-jest
+  development toolchain that currently require a breaking dependency shift per
+  npm's suggested remediation path.
 
 ## [1.2.0] - 2026-07-30
 
