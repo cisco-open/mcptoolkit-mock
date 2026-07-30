@@ -30,6 +30,37 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify tag base matches package.json and select dist-tag
+        id: release
+        run: |
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          # Allow RC tags (e.g. v1.2.0-rc.1) against a stable package.json
+          # (e.g. 1.2.0) by comparing only the semver base (pre '-').
+          PKG_BASE="${PKG_VERSION%%-*}"
+          TAG_BASE="${TAG_VERSION%%-*}"
+          if [ "$PKG_BASE" != "$TAG_BASE" ]; then
+            echo "::error::Tag base '${TAG_BASE}' does not match package.json base version '${PKG_BASE}'"
+            exit 1
+          fi
+          # When the tag carries a pre-release label that package.json lacks
+          # (RC workflow), align package.json to the tag version so the
+          # published package carries the correct version string.
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "RC mode: aligning package version from ${PKG_VERSION} to ${TAG_VERSION}"
+            npm version "$TAG_VERSION" --no-git-tag-version --allow-same-version
+          fi
+          # Dist-tag is driven by the tag, not by package.json:
+          # tags containing '-' (e.g. 1.2.0-rc.1) publish under 'next';
+          # clean semver tags (e.g. 1.2.0) publish under 'latest'.
+          if printf '%s' "$TAG_VERSION" | grep -q '-'; then
+            DIST_TAG=next
+          else
+            DIST_TAG=latest
+          fi
+          echo "dist_tag=${DIST_TAG}" >> "$GITHUB_OUTPUT"
+          echo "Publishing ${TAG_VERSION} under dist-tag '${DIST_TAG}'"
+
       - name: Build
         run: npm run build
 
@@ -38,25 +69,6 @@ jobs:
 
       - name: Check documentation links
         run: npm run test:links
-
-      - name: Verify tag matches package.json and select dist-tag
-        id: release
-        run: |
-          PKG_VERSION="$(node -p "require('./package.json').version")"
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
-          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
-            echo "::error::Tag '${GITHUB_REF_NAME}' does not match package.json version '${PKG_VERSION}'"
-            exit 1
-          fi
-          # Pre-release versions (e.g. 1.0.0-rc.5) publish under the 'next'
-          # dist-tag so `npm install` keeps serving the latest stable release.
-          if printf '%s' "$PKG_VERSION" | grep -q '-'; then
-            DIST_TAG=next
-          else
-            DIST_TAG=latest
-          fi
-          echo "dist_tag=${DIST_TAG}" >> "$GITHUB_OUTPUT"
-          echo "Publishing ${PKG_VERSION} under dist-tag '${DIST_TAG}'"
 
       - name: Publish
         run: npm publish --provenance --access public --tag "${{ steps.release.outputs.dist_tag }}"
